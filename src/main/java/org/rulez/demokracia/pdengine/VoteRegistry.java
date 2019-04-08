@@ -11,8 +11,12 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 import com.google.gson.JsonObject;
 
 public class VoteRegistry extends ChoiceManager implements IVoteManager {
-	public VoteRegistry(final WebServiceContext wsContext) {
+	private AssuranceManager assuranceManager;
+
+	public VoteRegistry(final WebServiceContext wsContext, AssuranceManager assuranceManager) {
 		super(wsContext);
+		this.assuranceManager = assuranceManager;
+
 	}
 
 	@Override
@@ -206,6 +210,14 @@ public class VoteRegistry extends ChoiceManager implements IVoteManager {
 		} else {
 			throw new ReportedException("Illegal minEndorsements", Integer.toString(voteParameters.minEndorsements));
 		}
+	}
+
+	@Override
+	public List<String> getAssurances() {
+		String wsUserName = this.getWsUserName();
+		System.out.printf("proxyId=%s\n", wsUserName);
+		System.out.printf("manager=%s\n", assuranceManager);
+		return assuranceManager.getAssurances(wsUserName);
 	}
 }
 
