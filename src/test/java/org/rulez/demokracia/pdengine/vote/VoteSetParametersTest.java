@@ -1,11 +1,13 @@
 package org.rulez.demokracia.pdengine.vote;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
 import org.rulez.demokracia.pdengine.dataobjects.VoteParameters;
+import org.rulez.demokracia.pdengine.exception.ReportedException;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
@@ -27,7 +30,8 @@ public class VoteSetParametersTest extends ThrowableTester {
 
   private static final String VALIDATES_INPUTS = "validates inputs";
 
-  private static final String SETS_THE_PARAMETERS_OF_THE_VOTE = "sets the parameters of the vote";
+  private static final String SETS_THE_PARAMETERS_OF_THE_VOTE =
+      "sets the parameters of the vote";
 
   private static final String VOTE_INVARIANTS = "vote invariants";
 
@@ -36,6 +40,9 @@ public class VoteSetParametersTest extends ThrowableTester {
 
   @Mock
   private VoteRepository voteRepository;
+
+  @Mock
+  private AdminKeyCheckerService adminKeyCheckerService;
 
   private Vote vote;
   private String originVoteId;
@@ -56,8 +63,10 @@ public class VoteSetParametersTest extends ThrowableTester {
     saveOriginalValues();
     setVoteParameters();
 
-    voteService.setVoteParameters(new VoteAdminInfo(vote.getId(), vote.getAdminKey()),
-        voteParameters);
+    voteService
+        .setVoteParameters(new VoteAdminInfo(vote.getId(), vote.getAdminKey()),
+            voteParameters
+        );
   }
 
   private void setVoteParameters() {
@@ -82,36 +91,50 @@ public class VoteSetParametersTest extends ThrowableTester {
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_voteId_is_rejected() {
-    String invalidVoteId = RandomUtils.createRandomKey();
+    final String invalidVoteId = RandomUtils.createRandomKey();
     assertThrows(() -> {
-      voteService.setVoteParameters(new VoteAdminInfo(invalidVoteId, vote.getAdminKey()),
-          voteParameters);
+      voteService.setVoteParameters(
+          new VoteAdminInfo(invalidVoteId, vote.getAdminKey()),
+          voteParameters
+      );
     }).assertMessageIs("illegal voteId");
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_adminKey_is_rejected() {
-    String invalidAdminKey = RandomUtils.createRandomKey();
-    assertThrows(() -> voteService
-        .setVoteParameters(new VoteAdminInfo(vote.getId(), invalidAdminKey), voteParameters))
-            .assertMessageIs("Illegal adminKey");
+    final String invalidAdminKey = RandomUtils.createRandomKey();
+    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
+        .checkAdminKey(vote, invalidAdminKey);
+    assertThrows(
+        () -> voteService
+            .setVoteParameters(new VoteAdminInfo(vote.getId(), invalidAdminKey), voteParameters)
+    )
+        .assertMessageIs("IllegalKey");
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_minEndorsements_is_rejected() {
-    int invalidMinEndorsements = -2;
+    final int invalidMinEndorsements = -2;
     voteParameters.setMinEndorsements(invalidMinEndorsements);
-    assertThrows(() -> voteService
-        .setVoteParameters(new VoteAdminInfo(vote.getId(), vote.getAdminKey()), voteParameters))
-            .assertMessageIs("Illegal minEndorsements");
+    assertThrows(
+        () -> voteService
+            .setVoteParameters(
+                new VoteAdminInfo(vote.getId(), vote.getAdminKey()), voteParameters
+            )
+    )
+        .assertMessageIs("Illegal minEndorsements");
   }
 
   @TestedBehaviour(SETS_THE_PARAMETERS_OF_THE_VOTE)
   @Test
-  public void setVoteParameters_sets_the_minEndorsement_parameter_of_the_vote() {
-    assertEquals(voteParameters.getMinEndorsements(), vote.getParameters().getMinEndorsements());
+  public void
+      setVoteParameters_sets_the_minEndorsement_parameter_of_the_vote() {
+    assertEquals(
+        voteParameters.getMinEndorsements(),
+        vote.getParameters().getMinEndorsements()
+    );
   }
 
   @TestedBehaviour(SETS_THE_PARAMETERS_OF_THE_VOTE)

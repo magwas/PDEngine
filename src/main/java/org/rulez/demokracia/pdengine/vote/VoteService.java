@@ -17,8 +17,12 @@ public interface VoteService {
 
   Vote getVoteWithValidatedAdminKey(VoteAdminInfo adminInfo);
 
-  void setVoteParameters(final VoteAdminInfo adminInfo, final VoteParameters voteParameters);
+  void setVoteParameters(
+      final VoteAdminInfo adminInfo, final VoteParameters voteParameters
+  );
 
   Vote saveVote(Vote vote);
+
+  Vote getModifiableVote(VoteAdminInfo adminInfo);
 
 }

@@ -1,7 +1,10 @@
 package org.rulez.demokracia.pdengine.ballot;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doThrow;
+
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +48,13 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @TestedBehaviour("validates inputs")
   @Test
   public void adminKey_is_checked() {
-    assertThrows(() -> {
-      ballotService.obtainBallot(vote, "illegalAdminKey");
-    }).assertException(ReportedException.class).assertMessageIs("Illegal adminKey");
+    final String invalidAdminKey = "illegalAdminKey";
+    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
+        .checkAdminKey(vote, invalidAdminKey);
+
+    assertThrows(() -> ballotService.obtainBallot(vote, invalidAdminKey))
+        .assertException(ReportedException.class)
+        .assertMessageIs("IllegalKey");
 
   }
 
@@ -58,20 +65,28 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
     assertTrue(vote.getBallots().contains(ballot));
   }
 
-  @TestedBehaviour("the number of ballots obtained with adminKey are recorded for \"admin\"")
+  @TestedBehaviour(
+    "the number of ballots obtained with adminKey are recorded for \"admin\""
+  )
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_admin() {
     final String adminKey = vote.getAdminKey();
     final int originalObtainedBallots = vote.getRecordedBallotsCount(adminKey);
     ballotService.obtainBallot(vote, adminKey);
-    assertEquals(originalObtainedBallots + 1, vote.getRecordedBallotsCount("admin").intValue());
+    assertEquals(
+        originalObtainedBallots + 1, vote.getRecordedBallotsCount("admin").intValue()
+    );
   }
 
-  @TestedBehaviour("the number of ballots obtained with anon adminkey are recorded with the proxy id of the user")
+  @TestedBehaviour(
+    "the number of ballots obtained with anon adminkey are recorded with the proxy id of the user"
+  )
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_anon() {
     final int originalObtainedBallots = vote.getRecordedBallotsCount(ANON_USER);
     ballotService.obtainBallot(vote, ANON_USER);
-    assertEquals(originalObtainedBallots + 1, vote.getRecordedBallotsCount(ANON_USER).intValue());
+    assertEquals(
+        originalObtainedBallots + 1, vote.getRecordedBallotsCount(ANON_USER).intValue()
+    );
   }
 }

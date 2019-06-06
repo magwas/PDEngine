@@ -1,9 +1,11 @@
 package org.rulez.demokracia.pdengine.vote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import java.util.Optional;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
+import org.rulez.demokracia.pdengine.exception.ReportedException;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
@@ -35,46 +38,65 @@ public class VoteModificationValidationTest extends ThrowableTester {
   @Mock
   private VoteRepository voteRepository;
 
+  @Mock
+  private AdminKeyCheckerService adminKeyCheckerService;
+
   private Vote existingVote;
 
   @Before
   public void setUp() {
     existingVote = new Vote("name", Set.of(), Set.of(), false, 1);
-    when(voteRepository.findById(existingVote.getId())).thenReturn(Optional.of(existingVote));
+    when(voteRepository.findById(existingVote.getId()))
+        .thenReturn(Optional.of(existingVote));
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
-  public void the_name_is_verified_against_the_same_rules_as_in_vote_creation() {
-    String modifiedVoteName = null;
-    assertThrows(() -> voteService.modifyVote(
-        new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), modifiedVoteName))
-            .assertMessageIs("vote name is null");
+  public void
+      the_name_is_verified_against_the_same_rules_as_in_vote_creation() {
+    final String modifiedVoteName = null;
+    assertThrows(
+        () -> voteService.modifyVote(
+            new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), modifiedVoteName
+        )
+    )
+        .assertMessageIs("vote name is null");
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_adminKey_is_rejected() {
-    String invalidAdminKey = RandomUtils.createRandomKey();
-    assertThrows(() -> voteService
-        .modifyVote(new VoteAdminInfo(existingVote.getId(), invalidAdminKey), NEW_VOTE_NAME))
-            .assertMessageIs("Illegal adminKey");
+    final String invalidAdminKey = RandomUtils.createRandomKey();
+    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
+        .checkAdminKey(existingVote, invalidAdminKey);
+
+    assertThrows(
+        () -> voteService
+            .modifyVote(new VoteAdminInfo(existingVote.getId(), invalidAdminKey), NEW_VOTE_NAME)
+    )
+        .assertMessageIs("IllegalKey");
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_voteId_is_rejected() {
-    String invalidvoteId = RandomUtils.createRandomKey();
-    assertThrows(() -> voteService
-        .modifyVote(new VoteAdminInfo(invalidvoteId, existingVote.getAdminKey()), NEW_VOTE_NAME))
-            .assertMessageIs("illegal voteId");
+    final String invalidvoteId = RandomUtils.createRandomKey();
+    assertThrows(
+        () -> voteService
+            .modifyVote(
+                new VoteAdminInfo(invalidvoteId, existingVote.getAdminKey()), NEW_VOTE_NAME
+            )
+    )
+        .assertMessageIs("illegal voteId");
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void valid_vote_should_be_renamed() {
-    voteService.modifyVote(new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()),
-        NEW_VOTE_NAME);
+    voteService.modifyVote(
+        new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()),
+        NEW_VOTE_NAME
+    );
     assertEquals(NEW_VOTE_NAME, existingVote.getName());
   }
 
@@ -83,8 +105,11 @@ public class VoteModificationValidationTest extends ThrowableTester {
   public void modifyVote_with_ballot_get_an_exception() {
     existingVote.getBallots().add("TestBallots");
 
-    assertThrows(() -> voteService.modifyVote(
-        new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), NEW_VOTE_NAME))
-            .assertMessageIs("This vote cannot be modified it has issued ballots.");
+    assertThrows(
+        () -> voteService.modifyVote(
+            new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), NEW_VOTE_NAME
+        )
+    )
+        .assertMessageIs("This vote cannot be modified it has issued ballots.");
   }
 }

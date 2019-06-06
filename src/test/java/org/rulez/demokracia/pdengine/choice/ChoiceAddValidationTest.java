@@ -1,13 +1,13 @@
 package org.rulez.demokracia.pdengine.choice;
 
 import static org.mockito.Mockito.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
@@ -15,6 +15,7 @@ import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
 import org.rulez.demokracia.pdengine.exception.ReportedException;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 import org.rulez.demokracia.pdengine.testhelpers.VariantVote;
+import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
 import org.rulez.demokracia.pdengine.vote.Vote;
 import org.rulez.demokracia.pdengine.vote.VoteService;
 
@@ -29,40 +30,45 @@ public class ChoiceAddValidationTest extends ThrowableTester {
   @Mock
   private VoteService voteService;
 
+  @Mock
+  private AdminKeyCheckerService adminKeyCheckerService;
+
   private final Vote vote = new VariantVote();
-  private final VoteAdminInfo adminInfo = new VoteAdminInfo(vote.getId(), vote.getAdminKey());
-  private final String invalidvoteId = RandomUtils.createRandomKey();
 
   @Before
   public void setUp() {
-    when(voteService.getVote(adminInfo.getVoteId())).thenReturn(vote);
-    doThrow(new ReportedException("illegal voteId", invalidvoteId)).when(voteService)
-        .getVote(invalidvoteId);
   }
 
   @TestedBehaviour("validates inputs")
   @Test
-  public void invalid_voteId_is_rejected() {
-    assertaddChoiceThrowsUp(invalidvoteId, vote.getAdminKey()).assertMessageIs("illegal voteId");
+  public void invalid_vote_admin_info_is_rejected() {
+    final VoteAdminInfo voteAdminInfo = mock(VoteAdminInfo.class);
+    doThrow(new ReportedException("IllegalKey")).when(voteService)
+        .getModifiableVote(voteAdminInfo);
+
+    assertaddChoiceThrowsUp(voteAdminInfo)
+        .assertMessageIs("IllegalKey");
   }
 
-  @TestedBehaviour("validates inputs")
+  @TestedBehaviour(
+    "No choice can be added if the vote is not modifiable."
+  )
   @Test
-  public void invalid_adminKey_is_rejected() {
-    assertaddChoiceThrowsUp(vote.getId(), "invalidAdminKey").assertMessageIs("Illegal adminKey");
+  public void no_choice_can_be_added_if_the_vote_is_not_modifiable() {
+    final VoteAdminInfo voteAdminInfo =
+        new VoteAdminInfo(vote.getId(), vote.getAdminKey());
+    doThrow(new ReportedException("unmodifiable"))
+        .when(voteService)
+        .getModifiableVote(voteAdminInfo);
+    assertaddChoiceThrowsUp(voteAdminInfo)
+        .assertMessageIs("unmodifiable");
   }
 
-  @TestedBehaviour("No choice can be added if there are ballots issued for the vote.")
-  @Test
-  public void no_choice_can_be_added_there_are_issued_ballots() {
-    vote.getBallots().add("TestBallots");
-    assertaddChoiceThrowsUp(vote.getId(), vote.getAdminKey())
-        .assertMessageIs("Vote modification disallowed: ballots already issued");
-  }
-
-  private ThrowableTester assertaddChoiceThrowsUp(final String voteId, final String adminKey) {
+  private ThrowableTester
+      assertaddChoiceThrowsUp(final VoteAdminInfo voteAdminInfo) {
     return assertThrows(() -> {
-      choiceService.addChoice(new VoteAdminInfo(voteId, adminKey), "choice1", "user");
+      choiceService
+          .addChoice(voteAdminInfo, "choice1", "user");
     });
   }
 }

@@ -1,12 +1,14 @@
 package org.rulez.demokracia.pdengine.choice;
 
 import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.rulez.demokracia.pdengine.authentication.AuthenticatedUserService;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 import org.rulez.demokracia.pdengine.testhelpers.VariantVote;
+import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
 import org.rulez.demokracia.pdengine.vote.Vote;
 import org.rulez.demokracia.pdengine.vote.VoteService;
 
@@ -19,6 +21,9 @@ public class ChoiceTestBase extends ThrowableTester {
   protected VoteService voteService;
   @Mock
   protected AuthenticatedUserService authService;
+
+  @Mock
+  protected AdminKeyCheckerService adminKeyCheckerService;
 
   protected Vote vote = new VariantVote();
 

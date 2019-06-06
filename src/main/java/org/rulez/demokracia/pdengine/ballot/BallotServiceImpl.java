@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.authentication.AuthenticatedUserService;
+import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
 import org.rulez.demokracia.pdengine.vote.Vote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,12 @@ public class BallotServiceImpl implements BallotService {
   @Autowired
   private AuthenticatedUserService authenticatedUserService;
 
+  @Autowired
+  private AdminKeyCheckerService adminKeyCheckerService;
+
   @Override
   public String obtainBallot(final Vote vote, final String adminKey) {
-    vote.checkAdminKey(adminKey);
+    adminKeyCheckerService.checkAdminKey(vote, adminKey);
     if (adminKey.equals(vote.getAdminKey()))
       vote.increaseRecordedBallots("admin");
     else

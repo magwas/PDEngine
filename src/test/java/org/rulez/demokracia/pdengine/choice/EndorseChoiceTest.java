@@ -1,8 +1,8 @@
 package org.rulez.demokracia.pdengine.choice;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,54 +29,85 @@ public class EndorseChoiceTest extends ChoiceTestBase {
     vote.addChoice(choice);
   }
 
-  @TestedBehaviour("if adminKey is not user, the userName is registered "
-      + "as endorserName for the choice")
+  @TestedBehaviour(
+    "if adminKey is not user, the userName is registered " +
+        "as endorserName for the choice"
+  )
   @Test
   public void endorsement_is_registered() {
-    choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), vote.getAdminKey()), choice.getId(),
-        "testuser");
+    choiceService.endorseChoice(
+        new VoteAdminInfo(vote.getId(), vote.getAdminKey()), choice.getId(),
+        "testuser"
+    );
     assertTrue(choice.getEndorsers().contains("testuser"));
   }
 
-  @TestedBehaviour("if adminKey is 'user', then canEndorse must be true,"
-      + " and the proxy id of the user will be registered as endorserName for the choice")
+  @TestedBehaviour(
+    "if adminKey is 'user', then canEndorse must be true," +
+        " and the proxy id of the user will be registered as endorserName for the choice"
+  )
   @Test
-  public void if_adminKey_is_user_and_canEndorse_is_false_then_an_exception_is_thrown() {
-    assertThrows(() -> choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), "user"),
-        choice.getId(), TEST_USER_NAME)).assertException(ReportedException.class);
+  public void
+      if_adminKey_is_user_and_canEndorse_is_false_then_an_exception_is_thrown() {
+    assertThrows(
+        () -> choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), "user"),
+            choice.getId(), TEST_USER_NAME
+        )
+    ).assertException(ReportedException.class);
   }
 
-  @TestedBehaviour("if adminKey is 'user', then canEndorse must be true,"
-      + " and the proxy id of the user will be registered as endorserName for the choice")
+  @TestedBehaviour(
+    "if adminKey is 'user', then canEndorse must be true," +
+        " and the proxy id of the user will be registered as endorserName for the choice"
+  )
   @Test
-  public void if_adminKey_is_user_then_the_proxy_id_is_registered_for_the_vote() {
+  public void
+      if_adminKey_is_user_then_the_proxy_id_is_registered_for_the_vote() {
     vote.getParameters().setEndorsable(true);
     when(authService.getAuthenticatedUserName()).thenReturn(TEST_USER_NAME);
-    choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), "user"), choice.getId(),
-        TEST_USER_NAME);
+    choiceService
+        .endorseChoice(new VoteAdminInfo(vote.getId(), "user"), choice.getId(),
+            TEST_USER_NAME
+        );
     assertTrue(choice.getEndorsers().contains(TEST_USER_NAME));
   }
 
   @TestedBehaviour("validates inputs")
   @Test
   public void voteId_is_the_id_of_an_existing_vote() {
-    doThrow(new RuntimeException("Illegal voteId")).when(voteService).getVote(invalidvoteId);
-    assertThrows(() -> choiceService.endorseChoice(new VoteAdminInfo(invalidvoteId, "user"),
-        choice.getId(), TEST_USER_NAME)).assertMessageIs("Illegal voteId");
+    doThrow(new RuntimeException("Illegal voteId")).when(voteService)
+        .getVote(invalidvoteId);
+    assertThrows(
+        () -> choiceService
+            .endorseChoice(new VoteAdminInfo(invalidvoteId, "user"),
+                choice.getId(), TEST_USER_NAME
+            )
+    ).assertMessageIs("Illegal voteId");
   }
 
   @TestedBehaviour("validates inputs")
   @Test
   public void invalid_adminKey_is_rejected() {
-    assertThrows(() -> choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), "illegal"),
-        choice.getId(), TEST_USER_NAME)).assertMessageIs("Illegal adminKey");
+    final String invalidAdminKey = "illegal";
+    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
+        .checkAdminKey(vote, invalidAdminKey);
+
+    assertThrows(
+        () -> choiceService
+            .endorseChoice(new VoteAdminInfo(vote.getId(), invalidAdminKey),
+                choice.getId(), TEST_USER_NAME
+            )
+    ).assertMessageIs("IllegalKey");
   }
 
   @TestedBehaviour("validates inputs")
   @Test
   public void invalid_choiceId_is_rejected() {
     assertThrows(
-        () -> choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), vote.getAdminKey()),
-            "illegalChoice", TEST_USER_NAME)).assertMessageIs("Illegal choiceId");
+        () -> choiceService
+            .endorseChoice(new VoteAdminInfo(vote.getId(), vote.getAdminKey()),
+                "illegalChoice", TEST_USER_NAME
+            )
+    ).assertMessageIs("Illegal choiceId");
   }
 }

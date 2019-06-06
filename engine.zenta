@@ -3616,7 +3616,7 @@ String choice: the name of the choice</documentation>
           <element xsi:type="zenta:BasicRelationship" id="6bea6f2e-cf59-4d58-bb7e-75cd88cd8d73" ancestor="e85cd8d3-b087-4b67-b309-0b52fd48e4af" source="fa918d03-bac0-413e-8759-02254d5d2c81" target="f03d1e89-5f2b-4afd-9e68-9c2831d09ca4"/>
           <element xsi:type="zenta:BasicRelationship" id="5e03e51a-2906-4117-8683-16e6a1cc427f" ancestor="e85cd8d3-b087-4b67-b309-0b52fd48e4af" source="fa918d03-bac0-413e-8759-02254d5d2c81" target="af499e94-b21e-4295-8f22-efe9e9e0be15"/>
           <element xsi:type="zenta:BasicObject" name="deletes the choice" id="86b0aeef-6550-4fcb-8fc0-ac3f2b4ffb88" ancestor="behaviour"/>
-          <element xsi:type="zenta:BasicObject" name="if the vote has ballots issued, the choice cannot be deleted" id="d52ae8af-77bf-4ac0-b8b4-b1b201cc4e9f" ancestor="behaviour"/>
+          <element xsi:type="zenta:BasicObject" name="if the vote is unmodifiable, the choice cannot be deleted" id="d52ae8af-77bf-4ac0-b8b4-b1b201cc4e9f" ancestor="behaviour"/>
           <element xsi:type="zenta:BasicRelationship" id="feefd341-ea86-4e76-83e8-8f076a570d6a" ancestor="application_component_contains" source="fa918d03-bac0-413e-8759-02254d5d2c81" target="org.rulez.demokracia.pdengine.choice.ChoiceService.deleteChoice"/>
           <element xsi:type="zenta:BasicObject" name="ChoiceEndorseService" id="c67ae7e6-39fd-4cc7-968d-e49726054b09" ancestor="service"/>
           <element xsi:type="zenta:BasicRelationship" id="e8934ce7-79b9-4396-87da-2f129d27245a" ancestor="application_component_contains" source="package_org.rulez.demokracia.pdengine.choice" target="c67ae7e6-39fd-4cc7-968d-e49726054b09"/>
@@ -4237,6 +4237,7 @@ does not contain adminKey
               <sourceConnection xsi:type="zenta:Connection" id="8d9c2762-f7ae-4ac5-bec8-2e51827a1738" source="73694c8e-9598-48e1-9be2-786de937bb84" target="30b4d1e9-0362-4052-92bd-f8138986b5aa" relationship="serviceof_org.rulez.demokracia.pdengine.vote.VoteService.getVoteWithValidatedAdminKey"/>
               <sourceConnection xsi:type="zenta:Connection" id="c389a660-2c4b-4331-aac0-a887dc9cafd5" source="73694c8e-9598-48e1-9be2-786de937bb84" target="9ec92256-ed47-4732-9ccc-adeba9b48664" relationship="serviceof_org.rulez.demokracia.pdengine.vote.VoteService.setVoteParameters"/>
               <sourceConnection xsi:type="zenta:Connection" id="9003f2a5-0b00-44d1-af72-b25da1daef58" source="73694c8e-9598-48e1-9be2-786de937bb84" target="9ac7fcef-691f-4ebb-ae29-aef49784d29b" relationship="serviceof_org.rulez.demokracia.pdengine.vote.VoteService.saveVote"/>
+              <sourceConnection xsi:type="zenta:Connection" id="3635356d-926b-468e-93e3-72391bac9ef8" source="73694c8e-9598-48e1-9be2-786de937bb84" target="328fb058-e7c0-4a4b-b479-4ae5fefe0a2a" relationship="dfdbfae8-3ac0-49a5-a22a-5a50a399df58"/>
             </child>
             <child xsi:type="zenta:DiagramObject" id="101f0d37-f44a-4536-b651-c014fa04edd1" zentaElement="package_org.rulez.demokracia.pdengine.vote">
               <bounds x="493" y="84" width="-1" height="-1"/>
@@ -4289,13 +4290,13 @@ does not contain adminKey
                 <bendpoint startX="133" startY="-39" endX="-205" endY="273"/>
               </sourceConnection>
             </child>
-            <child xsi:type="zenta:DiagramObject" id="be8c08df-a901-46b4-ab7f-0f7d1436d564" targetConnections="18e9ea2f-dfe7-453b-a7a4-eab66ca8f3fc 92c2e582-b2c3-4067-b514-371032cf3f60 9bdeec05-6345-4bae-bd01-746506c3494c 6271736b-3d7e-4658-8ddd-7f3a33037102" zentaElement="org.rulez.demokracia.pdengine.vote.Vote">
+            <child xsi:type="zenta:DiagramObject" id="be8c08df-a901-46b4-ab7f-0f7d1436d564" targetConnections="18e9ea2f-dfe7-453b-a7a4-eab66ca8f3fc 92c2e582-b2c3-4067-b514-371032cf3f60 9bdeec05-6345-4bae-bd01-746506c3494c 6271736b-3d7e-4658-8ddd-7f3a33037102 b79ec3b8-5501-46a4-a798-6e3d0d2b4c2a" zentaElement="org.rulez.demokracia.pdengine.vote.Vote">
               <bounds x="444" y="384" width="-1" height="-1"/>
             </child>
             <child xsi:type="zenta:DiagramObject" id="c44cc83a-7707-4686-b8e3-9a5a7e082238" targetConnections="d5c425c1-18aa-493a-9fa9-bb4df014113b 7cf8eccb-0eca-409c-9b89-f3f4ba376710" zentaElement="java.lang.String">
               <bounds x="444" y="570" width="193"/>
             </child>
-            <child xsi:type="zenta:DiagramObject" id="ff44dd5d-f29f-4380-a025-528f249a8f7d" targetConnections="b1cca8f2-e2d2-41c5-ba4d-0e91053f56c3 ee56f010-25eb-48ba-bcce-cec679ffbb24 f3d0bc7d-1339-4480-85ae-52a8cdc951cd 0a0717bd-b357-4b53-b82e-d017d9e5a0c2 37ed5d18-dfd8-4de1-ab56-376e759d8f70" zentaElement="org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo">
+            <child xsi:type="zenta:DiagramObject" id="ff44dd5d-f29f-4380-a025-528f249a8f7d" targetConnections="b1cca8f2-e2d2-41c5-ba4d-0e91053f56c3 ee56f010-25eb-48ba-bcce-cec679ffbb24 f3d0bc7d-1339-4480-85ae-52a8cdc951cd 0a0717bd-b357-4b53-b82e-d017d9e5a0c2 37ed5d18-dfd8-4de1-ab56-376e759d8f70 4be5e069-3ec1-42de-b2fe-b8cf52531f1c" zentaElement="org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo">
               <bounds x="444" y="660" width="-1" height="-1"/>
             </child>
             <child xsi:type="zenta:DiagramObject" id="711b1add-cadc-4a66-881c-cbbef25032b4" targetConnections="c777102b-a380-49e4-a4d5-25ff7c1644f2" zentaElement="org.rulez.demokracia.pdengine.vote.CreateVoteRequest">
@@ -4396,6 +4397,11 @@ does not contain adminKey
               <bounds x="312" y="660" width="-1" height="-1"/>
               <sourceConnection xsi:type="zenta:Connection" id="999ce037-7e0d-41e4-8f21-7c880c4ab893" source="862e1673-44ad-498b-8dec-ec498a5e890d" target="9ec92256-ed47-4732-9ccc-adeba9b48664" relationship="a3961e75-6645-4328-a8e9-5ffd3eb721e5"/>
             </child>
+            <child xsi:type="zenta:DiagramObject" id="328fb058-e7c0-4a4b-b479-4ae5fefe0a2a" targetConnections="3635356d-926b-468e-93e3-72391bac9ef8" zentaElement="3ad51a13-36fd-4784-9a0d-e66ee070cc2a">
+              <bounds x="299" y="326" width="-1" height="-1"/>
+              <sourceConnection xsi:type="zenta:Connection" id="4be5e069-3ec1-42de-b2fe-b8cf52531f1c" source="328fb058-e7c0-4a4b-b479-4ae5fefe0a2a" target="ff44dd5d-f29f-4380-a025-528f249a8f7d" relationship="e650d295-aeb9-45d9-8403-482a62952ad4"/>
+              <sourceConnection xsi:type="zenta:Connection" id="b79ec3b8-5501-46a4-a798-6e3d0d2b4c2a" source="328fb058-e7c0-4a4b-b479-4ae5fefe0a2a" target="be8c08df-a901-46b4-ab7f-0f7d1436d564" relationship="52fb18c8-204c-4cfd-ad74-2888b3937420"/>
+            </child>
           </element>
           <element xsi:type="zenta:BasicObject" name="create vote" id="org.rulez.demokracia.pdengine.vote.VoteService.createVote" ancestor="service_method"/>
           <element xsi:type="zenta:BasicObject" name="delete vote" id="org.rulez.demokracia.pdengine.vote.VoteService.deleteVote" ancestor="service_method"/>
@@ -4458,6 +4464,7 @@ bool canView: true or false
 PUT /voteparameters/&lt;voteId> (String adminKey, Int minEndorsements, bool canAddin, bool canEndorse, bool canVote, bool canView) -> &quot;OK&quot;
 </documentation>
           </element>
+          <element xsi:type="zenta:BasicRelationship" id="dfdbfae8-3ac0-49a5-a22a-5a50a399df58" ancestor="application_component_contains" source="org.rulez.demokracia.pdengine.vote.VoteService" target="3ad51a13-36fd-4784-9a0d-e66ee070cc2a"/>
         </folder>
         <folder name="VoteController" id="dd62fd25-08aa-420e-ad33-b737e1bd975e">
           <element xsi:type="zenta:ZentaDiagramModel" name="VoteController" id="65769dd7-4087-43f0-9f66-fcba47918f3c">
@@ -4677,8 +4684,9 @@ PUT /voteparameters/&lt;voteId> (String adminKey, Int minEndorsements, bool canA
           <sourceConnection xsi:type="zenta:Connection" id="2b7bd0e6-0763-4c21-bd8d-955bb7c62048" source="7239e61f-a026-4b82-8da4-4564eee0b145" target="455a5d40-6655-4eb5-930a-696f1ebd7ef7" relationship="packageof_org.rulez.demokracia.pdengine.vote.VoteRepository"/>
           <sourceConnection xsi:type="zenta:Connection" id="f77d43fc-ff47-4a09-8a4b-baa5ecba64b6" source="7239e61f-a026-4b82-8da4-4564eee0b145" target="0bd4781f-1962-4b16-8060-b6ab88ced2cd" relationship="packageof_org.rulez.demokracia.pdengine.vote.VoteService"/>
           <sourceConnection xsi:type="zenta:Connection" id="858eaea3-5f0c-49f6-acd2-e5fa211aee1b" source="7239e61f-a026-4b82-8da4-4564eee0b145" target="cdb412c1-ac96-478d-ba43-d42c2cf0f033" relationship="packageof_org.rulez.demokracia.pdengine.vote.VoteServiceImpl"/>
+          <sourceConnection xsi:type="zenta:Connection" id="94a944e5-7569-4aed-b6fd-53b85303000e" source="7239e61f-a026-4b82-8da4-4564eee0b145" target="b7d0e1ed-0e28-4e00-b87d-ded65410db7e" relationship="2a9e8a0b-7407-4eb3-8747-cf9e8931009c"/>
         </child>
-        <child xsi:type="zenta:DiagramObject" id="e82aa417-4f25-40ca-a15f-60e924ae9c80" targetConnections="78db8ab8-9831-4dff-87e5-1a493272e879" zentaElement="org.rulez.demokracia.pdengine.vote.Vote">
+        <child xsi:type="zenta:DiagramObject" id="e82aa417-4f25-40ca-a15f-60e924ae9c80" targetConnections="78db8ab8-9831-4dff-87e5-1a493272e879 84eff86b-1979-4489-b49c-eea930739882 3c1975eb-3be0-4570-929a-9425c5e5c977" zentaElement="org.rulez.demokracia.pdengine.vote.Vote">
           <bounds x="564" y="360" width="-1" height="-1"/>
           <sourceConnection xsi:type="zenta:Connection" id="38320a07-bb60-4873-822e-dea5824b641f" source="e82aa417-4f25-40ca-a15f-60e924ae9c80" target="33153792-a636-4dee-9515-35bd7bc1179b" relationship="class_of_org.rulez.demokracia.pdengine.vote.VoteEntity_org.rulez.demokracia.pdengine.vote.Vote"/>
         </child>
@@ -4700,7 +4708,41 @@ PUT /voteparameters/&lt;voteId> (String adminKey, Int minEndorsements, bool canA
           <sourceConnection xsi:type="zenta:Connection" id="5b2287d5-8b1d-4219-ac7b-44e350ed1667" source="cdb412c1-ac96-478d-ba43-d42c2cf0f033" target="455a5d40-6655-4eb5-930a-696f1ebd7ef7" relationship="service_dependency_org.rulez.demokracia.pdengine.vote.VoteServiceImpl_org.rulez.demokracia.pdengine.vote.VoteRepository"/>
           <sourceConnection xsi:type="zenta:Connection" id="0b5a8d73-839f-4c3a-b51e-bdce171222f4" source="cdb412c1-ac96-478d-ba43-d42c2cf0f033" target="0bd4781f-1962-4b16-8060-b6ab88ced2cd" relationship="interface_of_org.rulez.demokracia.pdengine.vote.VoteService_org.rulez.demokracia.pdengine.vote.VoteServiceImpl"/>
         </child>
+        <child xsi:type="zenta:DiagramObject" id="b7d0e1ed-0e28-4e00-b87d-ded65410db7e" targetConnections="94a944e5-7569-4aed-b6fd-53b85303000e" zentaElement="e064068f-5462-4fdd-823d-fc4e11d357c1">
+          <bounds x="757" y="138" width="216"/>
+          <sourceConnection xsi:type="zenta:Connection" id="6bd7234e-559d-4e60-86ac-868aa8c96d13" source="b7d0e1ed-0e28-4e00-b87d-ded65410db7e" target="a58700c6-b069-453c-9cc1-bf6af412ba81" relationship="81c6150b-1789-4ec9-b7b2-e1afe2c19716"/>
+        </child>
+        <child xsi:type="zenta:DiagramObject" id="a58700c6-b069-453c-9cc1-bf6af412ba81" targetConnections="6bd7234e-559d-4e60-86ac-868aa8c96d13" zentaElement="7a6735f9-6009-463c-92cd-a89d481105fb">
+          <bounds x="1006" y="248" width="-1" height="-1"/>
+          <sourceConnection xsi:type="zenta:Connection" id="2d808514-b1ef-4548-bf58-e25ab21d8a1a" source="a58700c6-b069-453c-9cc1-bf6af412ba81" target="ab68bb59-0c9a-48a5-bb15-d8344acdb350" relationship="aea85da0-10bc-4f14-a027-9c6df40e3c98"/>
+          <sourceConnection xsi:type="zenta:Connection" id="84eff86b-1979-4489-b49c-eea930739882" source="a58700c6-b069-453c-9cc1-bf6af412ba81" target="e82aa417-4f25-40ca-a15f-60e924ae9c80" relationship="5cfa75ea-a3fa-4625-89a1-92cf8ecdecef"/>
+          <sourceConnection xsi:type="zenta:Connection" id="261d6bba-bc0f-42af-90cc-320bc1f18321" source="a58700c6-b069-453c-9cc1-bf6af412ba81" target="c1ced618-5991-45ca-ba14-a73f9063729c" relationship="bb2fe470-8588-4489-85f3-3411f4e29d92"/>
+        </child>
+        <child xsi:type="zenta:DiagramObject" id="ab68bb59-0c9a-48a5-bb15-d8344acdb350" targetConnections="2d808514-b1ef-4548-bf58-e25ab21d8a1a" zentaElement="void">
+          <bounds x="1021" y="384" width="-1" height="-1"/>
+        </child>
+        <child xsi:type="zenta:DiagramObject" id="c1ced618-5991-45ca-ba14-a73f9063729c" targetConnections="261d6bba-bc0f-42af-90cc-320bc1f18321" zentaElement="java.lang.String">
+          <bounds x="770" y="395" width="-1" height="-1"/>
+        </child>
+        <child xsi:type="zenta:DiagramObject" id="cede645d-9c12-4ff1-88c8-8d94923a1321" zentaElement="3ad51a13-36fd-4784-9a0d-e66ee070cc2a">
+          <bounds x="1046" y="99" width="-1" height="-1"/>
+          <sourceConnection xsi:type="zenta:Connection" id="60653262-ee7e-414d-a696-dd93e66528f2" source="cede645d-9c12-4ff1-88c8-8d94923a1321" target="69ebe709-0793-49da-9097-98f6d46df02e" relationship="e650d295-aeb9-45d9-8403-482a62952ad4"/>
+          <sourceConnection xsi:type="zenta:Connection" id="3c1975eb-3be0-4570-929a-9425c5e5c977" source="cede645d-9c12-4ff1-88c8-8d94923a1321" target="e82aa417-4f25-40ca-a15f-60e924ae9c80" relationship="52fb18c8-204c-4cfd-ad74-2888b3937420"/>
+        </child>
+        <child xsi:type="zenta:DiagramObject" id="69ebe709-0793-49da-9097-98f6d46df02e" targetConnections="60653262-ee7e-414d-a696-dd93e66528f2" zentaElement="org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo">
+          <bounds x="1087" y="515" width="-1" height="-1"/>
+        </child>
       </element>
+      <element xsi:type="zenta:BasicObject" name="AdminKeyCheckerService" id="e064068f-5462-4fdd-823d-fc4e11d357c1" ancestor="service"/>
+      <element xsi:type="zenta:BasicRelationship" id="2a9e8a0b-7407-4eb3-8747-cf9e8931009c" ancestor="application_component_contains" source="package_org.rulez.demokracia.pdengine.vote" target="e064068f-5462-4fdd-823d-fc4e11d357c1"/>
+      <element xsi:type="zenta:BasicObject" name="check admin key" id="7a6735f9-6009-463c-92cd-a89d481105fb" ancestor="service_method"/>
+      <element xsi:type="zenta:BasicRelationship" id="81c6150b-1789-4ec9-b7b2-e1afe2c19716" ancestor="application_component_contains" source="e064068f-5462-4fdd-823d-fc4e11d357c1" target="7a6735f9-6009-463c-92cd-a89d481105fb"/>
+      <element xsi:type="zenta:BasicRelationship" id="aea85da0-10bc-4f14-a027-9c6df40e3c98" ancestor="outputs" source="7a6735f9-6009-463c-92cd-a89d481105fb" target="void"/>
+      <element xsi:type="zenta:BasicRelationship" name="vote" id="5cfa75ea-a3fa-4625-89a1-92cf8ecdecef" ancestor="parameter" source="7a6735f9-6009-463c-92cd-a89d481105fb" target="org.rulez.demokracia.pdengine.vote.Vote"/>
+      <element xsi:type="zenta:BasicRelationship" name="providedAdminKey" id="bb2fe470-8588-4489-85f3-3411f4e29d92" ancestor="parameter" source="7a6735f9-6009-463c-92cd-a89d481105fb" target="java.lang.String"/>
+      <element xsi:type="zenta:BasicObject" name="get modifiable vote" id="3ad51a13-36fd-4784-9a0d-e66ee070cc2a" ancestor="service_method"/>
+      <element xsi:type="zenta:BasicRelationship" id="e650d295-aeb9-45d9-8403-482a62952ad4" ancestor="parameter" source="3ad51a13-36fd-4784-9a0d-e66ee070cc2a" target="org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo"/>
+      <element xsi:type="zenta:BasicRelationship" id="52fb18c8-204c-4cfd-ad74-2888b3937420" ancestor="outputs" source="3ad51a13-36fd-4784-9a0d-e66ee070cc2a" target="org.rulez.demokracia.pdengine.vote.Vote"/>
     </folder>
     <folder name="org.rulez.demokracia.pdengine.vote.validation" id="package_folder_org.rulez.demokracia.pdengine.vote.validation">
       <element xsi:type="zenta:BasicObject" name="validation" id="package_org.rulez.demokracia.pdengine.vote.validation" ancestor="package"/>
