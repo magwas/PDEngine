@@ -15,7 +15,7 @@ import org.rulez.demokracia.pdengine.choice.RankedChoice;
 @TestedFeature("Vote")
 @TestedOperation("Cast vote")
 @TestedBehaviour("The vote receipt contains the ballot cast and the cast vote identifier")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastReceiptTest extends CastVoteTestBase {
 
   @Override

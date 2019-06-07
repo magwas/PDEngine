@@ -13,7 +13,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
 @TestedBehaviour("the result contains tallying for each counted assurances")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ComputedVoteTallyingTest extends ComputedVoteTestBase {
 
   @Override

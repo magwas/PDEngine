@@ -15,7 +15,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
 @TestedBehaviour("calculates and stores winner list")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteResultWinnerListTest extends VoteResultTestBase {
 
   @Before

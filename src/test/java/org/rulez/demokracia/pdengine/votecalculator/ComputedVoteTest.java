@@ -27,7 +27,7 @@ import org.rulez.demokracia.pdengine.votecast.CastVote;
 
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ComputedVoteTest {
 
   @InjectMocks

@@ -1,18 +1,18 @@
 package org.rulez.demokracia.pdengine.choice;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.rulez.demokracia.pdengine.Context;
 import org.rulez.demokracia.pdengine.authentication.AuthenticatedUserService;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
-import org.rulez.demokracia.pdengine.testhelpers.VariantVote;
 import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
-import org.rulez.demokracia.pdengine.vote.Vote;
+import org.rulez.demokracia.pdengine.vote.VoteData;
 import org.rulez.demokracia.pdengine.vote.VoteService;
+import org.rulez.demokracia.pdengine.vote.VoteServiceContract;
 
-public class ChoiceTestBase extends ThrowableTester {
+public class ChoiceTestBase extends ThrowableTester
+    implements VoteServiceContract {
 
   @InjectMocks
   protected ChoiceServiceImpl choiceService;
@@ -25,14 +25,17 @@ public class ChoiceTestBase extends ThrowableTester {
   @Mock
   protected AdminKeyCheckerService adminKeyCheckerService;
 
-  protected Vote vote = new VariantVote();
+  protected VoteData voteData;
 
-  protected String invalidvoteId;
+  private Context context;
 
   @Before
   public void setUp() {
-    invalidvoteId = "invalidVoteId";
-    when(voteService.getVote(vote.getId())).thenReturn(vote);
+    voteData = new VoteData();
+    contract(voteService, voteData);
+    context = new Context();
+    contract(authService, context);
+
   }
 
 }

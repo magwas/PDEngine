@@ -15,7 +15,7 @@ import org.rulez.demokracia.pdengine.choice.RankedChoice;
 
 @TestedFeature("Vote")
 @TestedOperation("Cast vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastTest extends CastVoteTestBase {
 
   private static final String TESZT_ELEK = "TesztElek";

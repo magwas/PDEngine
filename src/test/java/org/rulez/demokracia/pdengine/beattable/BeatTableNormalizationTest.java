@@ -15,7 +15,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Schulze method")
 @TestedOperation("normalize beat matrix")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class BeatTableNormalizationTest extends ThrowableTester {
 
   @InjectMocks

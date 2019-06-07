@@ -13,7 +13,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.choice.RankedChoice;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastUpdatableTest extends CastVoteTestBase {
 
   private static final String TEST_USER_NAME = "GeorgeSoros";

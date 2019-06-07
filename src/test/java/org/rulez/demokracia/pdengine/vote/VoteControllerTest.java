@@ -12,7 +12,7 @@ import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteControllerTest {
 
   @InjectMocks

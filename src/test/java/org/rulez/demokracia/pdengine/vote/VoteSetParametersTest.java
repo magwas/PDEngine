@@ -25,7 +25,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
 @TestedOperation("set vote parameters")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteSetParametersTest extends ThrowableTester {
 
   private static final String VALIDATES_INPUTS = "validates inputs";

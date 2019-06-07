@@ -1,9 +1,6 @@
 package org.rulez.demokracia.pdengine.ballot;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doThrow;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,46 +10,55 @@ import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.exception.ReportedException;
-import org.rulez.demokracia.pdengine.vote.Vote;
 
 @TestedFeature("Manage votes")
 @TestedOperation("Obtain ballot")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ObtainBallotTest extends ObtainBallotTestBase {
 
   private static final String ANON_USER = "user";
-  private Vote vote;
 
   @Override
   @Before
   public void setUp() {
     super.setUp();
-    vote = createVote(List.of(HAVE));
   }
 
   @TestedBehaviour("creates a new ballot with an id for the vote")
   @Test
   public void obtain_ballot_returns_the_ballot_string() {
-    final String ballot = ballotService.obtainBallot(vote, vote.getAdminKey());
+    final String ballot = ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave,
+        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+    );
     assertTrue(ballot instanceof String);
   }
 
   @TestedBehaviour("creates a new ballot with an id for the vote")
   @Test
   public void two_ballots_are_different() {
-    final String ballot1 = ballotService.obtainBallot(vote, vote.getAdminKey());
-    final String ballot2 = ballotService.obtainBallot(vote, vote.getAdminKey());
+    final String ballot1 = ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave,
+        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+    );
+    final String ballot2 = ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave,
+        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+    );
     assertNotEquals(ballot1, ballot2);
   }
 
   @TestedBehaviour("validates inputs")
   @Test
   public void adminKey_is_checked() {
-    final String invalidAdminKey = "illegalAdminKey";
-    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
-        .checkAdminKey(vote, invalidAdminKey);
 
-    assertThrows(() -> ballotService.obtainBallot(vote, invalidAdminKey))
+    assertThrows(
+        () -> ballotService
+            .obtainBallot(
+                voteData.voteWithOneAssuranceWeHave,
+                invalidAdminKey
+            )
+    )
         .assertException(ReportedException.class)
         .assertMessageIs("IllegalKey");
 
@@ -61,8 +67,14 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @TestedBehaviour("creates a new ballot with an id for the vote")
   @Test
   public void obtainBallot_stores_the_ballot() {
-    final String ballot = ballotService.obtainBallot(vote, vote.getAdminKey());
-    assertTrue(vote.getBallots().contains(ballot));
+    final String ballot = ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave,
+        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+    );
+    assertTrue(
+        voteData.voteWithOneAssuranceWeHave.getBallots()
+            .contains(ballot)
+    );
   }
 
   @TestedBehaviour(
@@ -70,11 +82,18 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   )
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_admin() {
-    final String adminKey = vote.getAdminKey();
-    final int originalObtainedBallots = vote.getRecordedBallotsCount(adminKey);
-    ballotService.obtainBallot(vote, adminKey);
+    final String adminKey =
+        voteData.voteWithOneAssuranceWeHave.getAdminKey();
+    final int originalObtainedBallots =
+        voteData.voteWithOneAssuranceWeHave
+            .getRecordedBallotsCount(adminKey);
+    ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave, adminKey
+    );
     assertEquals(
-        originalObtainedBallots + 1, vote.getRecordedBallotsCount("admin").intValue()
+        originalObtainedBallots + 1,
+        voteData.voteWithOneAssuranceWeHave
+            .getRecordedBallotsCount("admin").intValue()
     );
   }
 
@@ -83,10 +102,16 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   )
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_anon() {
-    final int originalObtainedBallots = vote.getRecordedBallotsCount(ANON_USER);
-    ballotService.obtainBallot(vote, ANON_USER);
+    final int originalObtainedBallots =
+        voteData.voteWithOneAssuranceWeHave
+            .getRecordedBallotsCount(ANON_USER);
+    ballotService.obtainBallot(
+        voteData.voteWithOneAssuranceWeHave, ANON_USER
+    );
     assertEquals(
-        originalObtainedBallots + 1, vote.getRecordedBallotsCount(ANON_USER).intValue()
+        originalObtainedBallots + 1,
+        voteData.voteWithOneAssuranceWeHave
+            .getRecordedBallotsCount(ANON_USER).intValue()
     );
   }
 }

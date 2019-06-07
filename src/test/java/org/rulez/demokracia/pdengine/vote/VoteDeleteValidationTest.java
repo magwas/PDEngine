@@ -21,7 +21,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
 @TestedOperation("delete vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteDeleteValidationTest extends ThrowableTester {
 
   private static final String INVALID_VOTE_ID = "InvalidVoteId";

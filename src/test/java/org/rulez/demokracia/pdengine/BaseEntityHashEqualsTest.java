@@ -1,7 +1,7 @@
 package org.rulez.demokracia.pdengine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
@@ -17,8 +17,8 @@ public class BaseEntityHashEqualsTest {
 
   @Test
   public void entities_with_equal_fields_are_equal() {
-    Pair pair1 = new Pair(12, 42);
-    Pair pair2 = new Pair(12, 42);
+    final Pair pair1 = new Pair(12, 42);
+    final Pair pair2 = new Pair(12, 42);
     assertIdIsIrrelevant(pair1, pair2);
   }
 
@@ -29,22 +29,22 @@ public class BaseEntityHashEqualsTest {
 
   @Test
   public void entities_with_different_fields_are_not_equal() {
-    Pair pair1 = new Pair(12, 42);
-    Pair pair2 = new Pair(12, 69);
+    final Pair pair1 = new Pair(12, 42);
+    final Pair pair2 = new Pair(12, 69);
     assertNotEquals(pair1, pair2);
   }
 
   @Test
   public void equal_entities_have_the_same_hash_code() {
-    Pair pair1 = new Pair(12, 42);
-    Pair pair2 = new Pair(12, 42);
+    final Pair pair1 = new Pair(12, 42);
+    final Pair pair2 = new Pair(12, 42);
     assertEquals(pair1.hashCode(), pair2.hashCode());
   }
 
   @Test
   public void hashCode_should_return_different_hash_on_different_entities() {
-    Pair pair = new Pair(10, 10);
-    VoteEntity vote = new VariantVote();
+    final Pair pair = new Pair(10, 10);
+    final VoteEntity vote = new VariantVote();
     assertNotEquals(pair.hashCode(), vote.hashCode());
   }
 }

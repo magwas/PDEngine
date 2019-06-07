@@ -14,7 +14,7 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 @TestedFeature("Manage votes")
 @TestedOperation("show vote")
 @TestedBehaviour("validates inputs")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteShowValidationTest extends ShowVoteTestBase {
 
   private static final String VALID = "valid";

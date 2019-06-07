@@ -15,7 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.rulez.demokracia.pdengine.KeyProvider;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class MessageSignerServiceTest {
 
   private static final String SERIAL_PLAN = "SerialPlan";

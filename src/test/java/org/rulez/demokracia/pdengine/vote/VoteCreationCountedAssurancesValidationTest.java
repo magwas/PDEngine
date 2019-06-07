@@ -20,7 +20,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 @TestedFeature("Manage votes")
 @TestedOperation("create vote")
 @TestedBehaviour("formally validates all inputs")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCreationCountedAssurancesValidationTest extends ThrowableTester {
 
   @InjectMocks

@@ -16,7 +16,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 
 @TestedFeature("Supporting functionality")
 @TestedOperation("CastVote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CastVoteAssuranceTest extends CastVoteTestBase {
 
   @Override

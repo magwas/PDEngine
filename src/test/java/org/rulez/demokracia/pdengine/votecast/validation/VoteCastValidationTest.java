@@ -19,7 +19,7 @@ import org.rulez.demokracia.pdengine.votecast.CastVoteTestBase;
 
 @TestedFeature("Vote")
 @TestedOperation("Cast vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastValidationTest extends CastVoteTestBase {
 
   private static final String VALIDATES_INPUTS = "validates inputs";

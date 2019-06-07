@@ -20,7 +20,7 @@ import org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper;
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
 @TestedBehaviour("the winners list contains the looses to the first one")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteResultComposerTest extends VoteResultTestBase {
 
   @Before

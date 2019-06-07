@@ -16,7 +16,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 @TestedFeature("Schulze method")
 @TestedOperation("compare beats")
 @TestedBehaviour("implements the Floyd-Warshall algorithm")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class BeatTableTransitiveClosureTest {
 
   @InjectMocks

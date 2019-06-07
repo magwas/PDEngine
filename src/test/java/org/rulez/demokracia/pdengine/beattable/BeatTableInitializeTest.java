@@ -17,7 +17,7 @@ import org.rulez.demokracia.pdengine.votecast.CastVote;
 @TestedFeature("Schulze method")
 @TestedOperation("compute initial beat matrix")
 @TestedBehaviour("the beat matrix contains the beats")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class BeatTableInitializeTest extends ThrowableTester {
 
   private static final String FIRST = "A";

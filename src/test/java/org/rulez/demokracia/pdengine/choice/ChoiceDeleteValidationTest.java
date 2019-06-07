@@ -14,7 +14,7 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 
 @TestedFeature("Manage votes")
 @TestedOperation("delete choice")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ChoiceDeleteValidationTest extends ChoiceTestBase {
 
   @Override
@@ -31,7 +31,11 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
         .getVote(invalidvoteId);
     assertThrows(
         () -> choiceService
-            .deleteChoice(new VoteAdminInfo(invalidvoteId, vote.getAdminKey()), "choiceId")
+            .deleteChoice(
+                new VoteAdminInfo(
+                    invalidvoteId, voteData.voteWithNoAssurances.getAdminKey()
+                ), "choiceId"
+            )
     )
         .assertMessageIs("illegal voteId");
   }
@@ -42,7 +46,9 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
     final String invalidChoiceId = "InvalidChoiceId";
     assertThrows(
         () -> choiceService
-            .deleteChoice(new VoteAdminInfo(vote.getId(), vote.getAdminKey()), invalidChoiceId)
+            .deleteChoice(
+                voteData.voteAdminInfo, invalidChoiceId
+            )
     )
         .assertMessageIs("Illegal choiceId");
   }
@@ -51,9 +57,11 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
   @Test
   public void unmodifiable_vote_is_rejected() {
     final Choice choice = new Choice("ChoiceName", "user");
-    vote.addChoice(choice);
+    voteData.voteWithNoAssurances.addChoice(choice);
     final VoteAdminInfo voteAdminInfo =
-        new VoteAdminInfo(vote.getId(), "InvalidAdminKey");
+        new VoteAdminInfo(
+            voteData.voteWithNoAssurances.getId(), "InvalidAdminKey"
+        );
     doThrow(new ReportedException("unmodifiable"))
         .when(voteService)
         .getModifiableVote(voteAdminInfo);

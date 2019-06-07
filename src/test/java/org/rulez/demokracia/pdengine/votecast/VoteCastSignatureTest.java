@@ -18,7 +18,7 @@ import org.rulez.demokracia.pdengine.choice.RankedChoice;
 @TestedFeature("Vote")
 @TestedOperation("Cast vote")
 @TestedBehaviour("the vote receipt is signed by the server")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastSignatureTest {
 
   private static final String SIGNATURE = "S1GNature";

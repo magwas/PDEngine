@@ -17,7 +17,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 @TestedFeature("Manage votes")
 @TestedOperation("create vote")
 @TestedBehaviour("Creates a vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteServiceQueryTest extends ThrowableTester {
 
   private static final String VOTE_ID = "badbeefb1gb00b5";

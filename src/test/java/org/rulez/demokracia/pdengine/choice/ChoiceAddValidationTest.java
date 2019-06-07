@@ -21,7 +21,7 @@ import org.rulez.demokracia.pdengine.vote.VoteService;
 
 @TestedFeature("Manage votes")
 @TestedOperation("Add choice")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ChoiceAddValidationTest extends ThrowableTester {
 
   @InjectMocks

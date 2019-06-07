@@ -64,7 +64,8 @@ public class ChoiceServiceImpl implements ChoiceService {
       checkIfVoteIsEndorseable(vote);
       userName = getUserName();
     }
-    adminKeyCheckerService.checkAdminKey(vote, voteAdminInfo.adminKey);
+    adminKeyCheckerService
+        .checkAdminKey(vote, voteAdminInfo.adminKey);
     vote.getChoice(choiceId).endorse(userName);
   }
 
@@ -72,8 +73,10 @@ public class ChoiceServiceImpl implements ChoiceService {
   public void
       deleteChoice(final VoteAdminInfo voteAdminInfo, final String choiceId) {
     final Vote vote = voteService.getModifiableVote(voteAdminInfo);
-    System.out.println("vote:" + vote);
+    System.out.println(vote);
     final Choice votesChoice = getChoice(voteAdminInfo.getVoteId(), choiceId);
+    System.out.println(votesChoice);
+    System.out.println(voteAdminInfo.isUserAdminKey());
 
     if (voteAdminInfo.isUserAdminKey())
       deleteChoiceAsUser(vote, votesChoice);
@@ -101,10 +104,12 @@ public class ChoiceServiceImpl implements ChoiceService {
       final VoteAdminInfo adminInfo, final Vote vote,
       final Choice votesChoice
   ) {
+    System.out.println(adminInfo.adminKey);
     if (!USER.equals(adminInfo.adminKey))
       return;
     checkIfVoteIsAddinable(
-        vote, new ReportedException(MODIFY_CANT_ADDIN_MESSAGE)
+        vote,
+        new ReportedException(MODIFY_CANT_ADDIN_MESSAGE)
     );
     checkIfUserIsTheSame(
         votesChoice, getUserName(),
@@ -129,7 +134,8 @@ public class ChoiceServiceImpl implements ChoiceService {
         new IllegalArgumentException(DELETE_NOT_SAME_USER_MESSAGE)
     );
     checkIfVoteIsAddinable(
-        vote, new IllegalArgumentException(DELETE_CANT_ADDIN)
+        vote,
+        new IllegalArgumentException(DELETE_CANT_ADDIN)
     );
     vote.getChoices().remove(votesChoice.getId());
   }

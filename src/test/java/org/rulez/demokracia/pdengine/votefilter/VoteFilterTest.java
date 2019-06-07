@@ -16,7 +16,7 @@ import org.rulez.demokracia.pdengine.votecast.CastVote;
 @TestedFeature("Supporting functionality")
 @TestedOperation("filter votes")
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteFilterTest {
 
   @InjectMocks

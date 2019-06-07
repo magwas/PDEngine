@@ -12,7 +12,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 @TestedFeature("Supporting functionality")
 @TestedOperation("Assurance management")
 @TestedBehaviour("Unimplemented")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class AssuranceManagerTest extends ThrowableTester {
 
   private static final String PROXY_ID = "proxyId";

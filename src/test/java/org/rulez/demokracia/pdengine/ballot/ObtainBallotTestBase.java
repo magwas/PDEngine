@@ -1,25 +1,17 @@
 package org.rulez.demokracia.pdengine.ballot;
 
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.catalina.connector.CoyotePrincipal;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.rulez.demokracia.pdengine.Context;
 import org.rulez.demokracia.pdengine.authentication.AuthenticatedUserService;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
-import org.rulez.demokracia.pdengine.vote.Vote;
+import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerServiceContract;
+import org.rulez.demokracia.pdengine.vote.VoteData;
 
-public class ObtainBallotTestBase extends ThrowableTester {
-
-  protected static final String DONT_HAVE = "dontHave";
-  protected static final String USER = "user";
-  protected static final String HAVE = "have";
-  protected static final String HAVE2 = "haveToo";
+public class ObtainBallotTestBase extends ThrowableTester
+    implements AdminKeyCheckerServiceContract {
 
   @InjectMocks
   protected BallotServiceImpl ballotService;
@@ -30,16 +22,16 @@ public class ObtainBallotTestBase extends ThrowableTester {
   @Mock
   protected AdminKeyCheckerService adminKeyCheckerService;
 
+  protected VoteData voteData;
+
+  protected Context context;
+
   @Before
   public void setUp() {
-    when(authService.getAuthenticatedUserName()).thenReturn(USER);
-    when(authService.getUserPrincipal()).thenReturn(new CoyotePrincipal(USER));
-    when(authService.hasAssurance(HAVE)).thenReturn(true);
+    voteData = new VoteData();
+    context = new Context();
+    contract(authService, context);
+    contract(adminKeyCheckerService, voteData);
   }
 
-  protected Vote createVote(final List<String> neededAssurances) {
-    return new Vote(
-        "HolVoteHolNemVote", neededAssurances, new ArrayList<>(), false, 1
-    );
-  }
 }

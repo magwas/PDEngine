@@ -20,7 +20,7 @@ import org.rulez.demokracia.pdengine.beattable.BeatTable;
 @TestedFeature("Schulze method")
 @TestedOperation("rank candidates")
 @TestedBehaviour("calculates winners until all choices are ignored")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteResultComposerIgnoreTest {
 
   @InjectMocks

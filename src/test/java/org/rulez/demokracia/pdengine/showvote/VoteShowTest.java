@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 @TestedFeature("Manage votes")
 @TestedOperation("show vote")
 @TestedBehaviour("returns the vote in json")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteShowTest extends ShowVoteJSONTestBase {
 
   private static final String COUNTED_ASSURANCE = "CountedAssurance";

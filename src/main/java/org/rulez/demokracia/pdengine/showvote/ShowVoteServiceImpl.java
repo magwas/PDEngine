@@ -8,6 +8,7 @@ import org.rulez.demokracia.pdengine.vote.VoteEntity;
 import org.rulez.demokracia.pdengine.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -25,10 +26,9 @@ public class ShowVoteServiceImpl implements ShowVoteService {
 
   @Override
   public JsonObject showVote(final VoteAdminInfo adminInfo) {
-    Vote vote = voteService.getVoteWithValidatedAdminKey(adminInfo);
-    if (!adminInfo.adminKey.equals(vote.getAdminKey())) {
+    final Vote vote = voteService.getVoteWithValidatedAdminKey(adminInfo);
+    if (!adminInfo.adminKey.equals(vote.getAdminKey()))
       checkAssurances(vote);
-    }
 
     return voteToJSON(vote);
   }
@@ -37,8 +37,8 @@ public class ShowVoteServiceImpl implements ShowVoteService {
 
     @Override
     public boolean shouldSkipField(final FieldAttributes field) {
-      return field.getDeclaringClass().equals(VoteEntity.class)
-          && field.getName().equals("adminKey");
+      return field.getDeclaringClass().equals(VoteEntity.class) &&
+          field.getName().equals("adminKey");
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ShowVoteServiceImpl implements ShowVoteService {
   };
 
   private JsonObject voteToJSON(final Vote vote) {
-    Gson gsonBuilder =
+    final Gson gsonBuilder =
         new GsonBuilder().addSerializationExclusionStrategy(exclusionStrategy).create();
     return gsonBuilder.toJsonTree(vote).getAsJsonObject();
   }
@@ -58,9 +58,8 @@ public class ShowVoteServiceImpl implements ShowVoteService {
   }
 
   private void checkAnAssurance(final String assurance) {
-    if (!authenticatedUserService.hasAssurance(assurance)) {
+    if (!authenticatedUserService.hasAssurance(assurance))
       throw new ReportedException("missing assurances", assurance);
-    }
   }
 
 }

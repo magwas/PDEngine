@@ -22,7 +22,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
 @TestedOperation("modify vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteModificationValidationTest extends ThrowableTester {
 
   private static final String THE_VOTE_CANNOT_BE_MODIFIED_IF_THERE_ARE_BALLOTS_ISSUED =

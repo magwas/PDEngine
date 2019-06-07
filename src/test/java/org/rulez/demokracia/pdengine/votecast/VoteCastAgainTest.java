@@ -16,7 +16,7 @@ import org.rulez.demokracia.pdengine.choice.RankedChoice;
 @TestedFeature("Vote")
 @TestedOperation("Cast vote")
 @TestedBehaviour("if there was a cast vote from the same user, the old one is deleted")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteCastAgainTest extends CastVoteTestBase {
 
   @Override

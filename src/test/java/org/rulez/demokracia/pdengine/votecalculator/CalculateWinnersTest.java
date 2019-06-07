@@ -22,7 +22,7 @@ import org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper;
 
 @TestedFeature("Vote")
 @TestedOperation("calculate winners")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CalculateWinnersTest {
 
   @InjectMocks

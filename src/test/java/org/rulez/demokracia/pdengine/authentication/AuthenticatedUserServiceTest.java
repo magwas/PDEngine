@@ -12,7 +12,7 @@ import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 @TestedFeature("Authentication")
 @TestedOperation("Get authorized user information")
 @TestedBehaviour("Unimplemented")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class AuthenticatedUserServiceTest extends ThrowableTester {
 
   @InjectMocks

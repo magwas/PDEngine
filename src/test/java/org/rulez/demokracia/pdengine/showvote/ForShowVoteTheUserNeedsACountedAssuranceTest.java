@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 @TestedFeature("Manage votes")
 @TestedOperation("show vote")
 @TestedBehaviour("if adminKey is anon, the user should have any of the countedAssurances")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ForShowVoteTheUserNeedsACountedAssuranceTest extends ShowVoteTestBase {
 
   @Before

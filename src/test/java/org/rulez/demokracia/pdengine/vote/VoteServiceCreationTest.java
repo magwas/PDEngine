@@ -20,7 +20,7 @@ import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
 @TestedFeature("Manage votes")
 @TestedOperation("create vote")
 @TestedBehaviour("Creates a vote")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VoteServiceCreationTest {
 
   private static final String VOTE_NAME = "vote name";

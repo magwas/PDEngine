@@ -17,7 +17,7 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 @TestedFeature("Vote")
 @TestedOperation("calculate winners")
 @TestedBehaviour("only choices not in ignoredChoices are considered")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class BeatTableIgnoreServiceTest {
 
   @InjectMocks

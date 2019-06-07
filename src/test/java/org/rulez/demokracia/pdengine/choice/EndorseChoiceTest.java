@@ -15,7 +15,7 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 
 @TestedFeature("Vote")
 @TestedOperation("Endorse option")
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class EndorseChoiceTest extends ChoiceTestBase {
 
   private static final String TEST_USER_NAME = "testuserke";
@@ -26,7 +26,7 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   public void setUp() {
     super.setUp();
     choice = new Choice("name", "O1G");
-    vote.addChoice(choice);
+    voteData.voteWithNoAssurances.addChoice(choice);
   }
 
   @TestedBehaviour(
@@ -36,7 +36,10 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   @Test
   public void endorsement_is_registered() {
     choiceService.endorseChoice(
-        new VoteAdminInfo(vote.getId(), vote.getAdminKey()), choice.getId(),
+        new VoteAdminInfo(
+            voteData.voteWithNoAssurances.getId(),
+            voteData.voteWithNoAssurances.getAdminKey()
+        ), choice.getId(),
         "testuser"
     );
     assertTrue(choice.getEndorsers().contains("testuser"));
@@ -50,7 +53,8 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   public void
       if_adminKey_is_user_and_canEndorse_is_false_then_an_exception_is_thrown() {
     assertThrows(
-        () -> choiceService.endorseChoice(new VoteAdminInfo(vote.getId(), "user"),
+        () -> choiceService.endorseChoice(
+            new VoteAdminInfo(voteData.voteWithNoAssurances.getId(), "user"),
             choice.getId(), TEST_USER_NAME
         )
     ).assertException(ReportedException.class);
@@ -63,10 +67,11 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   @Test
   public void
       if_adminKey_is_user_then_the_proxy_id_is_registered_for_the_vote() {
-    vote.getParameters().setEndorsable(true);
+    voteData.voteWithNoAssurances.getParameters().setEndorsable(true);
     when(authService.getAuthenticatedUserName()).thenReturn(TEST_USER_NAME);
     choiceService
-        .endorseChoice(new VoteAdminInfo(vote.getId(), "user"), choice.getId(),
+        .endorseChoice(
+            new VoteAdminInfo(voteData.voteWithNoAssurances.getId(), "user"), choice.getId(),
             TEST_USER_NAME
         );
     assertTrue(choice.getEndorsers().contains(TEST_USER_NAME));
@@ -90,11 +95,14 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   public void invalid_adminKey_is_rejected() {
     final String invalidAdminKey = "illegal";
     doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
-        .checkAdminKey(vote, invalidAdminKey);
+        .checkAdminKey(voteData.voteWithNoAssurances, invalidAdminKey);
 
     assertThrows(
         () -> choiceService
-            .endorseChoice(new VoteAdminInfo(vote.getId(), invalidAdminKey),
+            .endorseChoice(
+                new VoteAdminInfo(
+                    voteData.voteWithNoAssurances.getId(), invalidAdminKey
+                ),
                 choice.getId(), TEST_USER_NAME
             )
     ).assertMessageIs("IllegalKey");
@@ -105,7 +113,8 @@ public class EndorseChoiceTest extends ChoiceTestBase {
   public void invalid_choiceId_is_rejected() {
     assertThrows(
         () -> choiceService
-            .endorseChoice(new VoteAdminInfo(vote.getId(), vote.getAdminKey()),
+            .endorseChoice(
+                voteData.voteAdminInfo,
                 "illegalChoice", TEST_USER_NAME
             )
     ).assertMessageIs("Illegal choiceId");
