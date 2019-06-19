@@ -2,27 +2,27 @@ package org.rulez.demokracia.pdengine.vote;
 
 import static org.mockito.Mockito.*;
 
-import org.rulez.demokracia.pdengine.authentication.AuthServiceContract;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
 import org.rulez.demokracia.pdengine.exception.ReportedException;
 
-public interface AdminKeyCheckerServiceContract extends AuthServiceContract {
+public interface AdminKeyCheckerServiceContract extends VoteServiceContract {
 
-  String invalidAdminKey = "illegalAdminKey";
+  String ILLEGAL_KEY = "IllegalKey";
 
   default void contract(
       final AdminKeyCheckerService adminKeyCheckerService,
       final VoteData voteData
   ) {
 
-    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
+    doThrow(new ReportedException(ILLEGAL_KEY)).when(adminKeyCheckerService)
         .checkAdminKey(
-            voteData.voteWithOneAssuranceWeHave,
-            invalidAdminKey
+            voteData.voteWithNoNeededAssurances,
+            BAD_ADMINKEY
         );
 
     doNothing().when(adminKeyCheckerService)
         .checkAdminKey(
-            voteData.voteWithOneAssuranceWeHave,
+            voteData.voteWithOneNeededAssuranceWeHave,
             AUTHENTICATED_USER_NAME
         );
 

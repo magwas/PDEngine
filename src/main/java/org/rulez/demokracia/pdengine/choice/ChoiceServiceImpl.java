@@ -38,10 +38,10 @@ public class ChoiceServiceImpl implements ChoiceService {
 
   @Override
   public Choice addChoice(
-      final VoteAdminInfo voteAdminInfo, final String choiceName,
+      final VoteAdminInfo adminInfo, final String choiceName,
       final String user
   ) {
-    final Vote vote = voteService.getModifiableVote(voteAdminInfo);
+    final Vote vote = voteService.getModifiableVote(adminInfo);
     final Choice choice = new Choice(choiceName, user);
     vote.addChoice(choice);
     voteService.saveVote(vote);
@@ -55,30 +55,31 @@ public class ChoiceServiceImpl implements ChoiceService {
 
   @Override
   public void endorseChoice(
-      final VoteAdminInfo voteAdminInfo, final String choiceId,
+      final VoteAdminInfo adminInfo,
+      final String choiceId,
       final String givenUserName
   ) {
     String userName = givenUserName;
-    final Vote vote = voteService.getVote(voteAdminInfo.voteId);
-    if (USER.equals(voteAdminInfo.adminKey)) {
+    final Vote vote = voteService.getVote(adminInfo.voteId);
+    if (USER.equals(adminInfo.adminKey)) {
       checkIfVoteIsEndorseable(vote);
       userName = getUserName();
     }
     adminKeyCheckerService
-        .checkAdminKey(vote, voteAdminInfo.adminKey);
+        .checkAdminKey(vote, adminInfo.adminKey);
     vote.getChoice(choiceId).endorse(userName);
   }
 
   @Override
   public void
-      deleteChoice(final VoteAdminInfo voteAdminInfo, final String choiceId) {
-    final Vote vote = voteService.getModifiableVote(voteAdminInfo);
-    System.out.println(vote);
-    final Choice votesChoice = getChoice(voteAdminInfo.getVoteId(), choiceId);
-    System.out.println(votesChoice);
-    System.out.println(voteAdminInfo.isUserAdminKey());
+      deleteChoice(
+          final VoteAdminInfo adminInfo,
+          final String choiceId
+      ) {
+    final Vote vote = voteService.getModifiableVote(adminInfo);
+    final Choice votesChoice = getChoice(adminInfo.getVoteId(), choiceId);
 
-    if (voteAdminInfo.isUserAdminKey())
+    if (adminInfo.isUserAdminKey())
       deleteChoiceAsUser(vote, votesChoice);
     else
       vote.getChoices().remove(votesChoice.getId());
@@ -104,7 +105,6 @@ public class ChoiceServiceImpl implements ChoiceService {
       final VoteAdminInfo adminInfo, final Vote vote,
       final Choice votesChoice
   ) {
-    System.out.println(adminInfo.adminKey);
     if (!USER.equals(adminInfo.adminKey))
       return;
     checkIfVoteIsAddinable(

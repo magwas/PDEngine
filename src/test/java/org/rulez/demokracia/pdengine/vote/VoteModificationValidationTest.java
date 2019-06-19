@@ -1,10 +1,6 @@
 package org.rulez.demokracia.pdengine.vote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,18 +8,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
-import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
-import org.rulez.demokracia.pdengine.exception.ReportedException;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
 @TestedOperation("modify vote")
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class VoteModificationValidationTest extends ThrowableTester {
+public class VoteModificationValidationTest extends ThrowableTester
+    implements VoteRepositoryContract, AdminKeyCheckerServiceContract {
 
   private static final String THE_VOTE_CANNOT_BE_MODIFIED_IF_THERE_ARE_BALLOTS_ISSUED =
       "The vote cannot be modified if there are ballots issued.";
@@ -41,13 +36,13 @@ public class VoteModificationValidationTest extends ThrowableTester {
   @Mock
   private AdminKeyCheckerService adminKeyCheckerService;
 
-  private Vote existingVote;
+  private VoteData voteData;
 
   @Before
   public void setUp() {
-    existingVote = new Vote("name", Set.of(), Set.of(), false, 1);
-    when(voteRepository.findById(existingVote.getId()))
-        .thenReturn(Optional.of(existingVote));
+    voteData = new VoteData();
+    this.contract(adminKeyCheckerService, voteData);
+    this.contract(voteRepository, voteData);
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
@@ -57,7 +52,8 @@ public class VoteModificationValidationTest extends ThrowableTester {
     final String modifiedVoteName = null;
     assertThrows(
         () -> voteService.modifyVote(
-            new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), modifiedVoteName
+            voteData.adminInfoWithNoNeededAssurances,
+            modifiedVoteName
         )
     )
         .assertMessageIs("vote name is null");
@@ -66,48 +62,42 @@ public class VoteModificationValidationTest extends ThrowableTester {
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_adminKey_is_rejected() {
-    final String invalidAdminKey = RandomUtils.createRandomKey();
-    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
-        .checkAdminKey(existingVote, invalidAdminKey);
 
     assertThrows(
         () -> voteService
-            .modifyVote(new VoteAdminInfo(existingVote.getId(), invalidAdminKey), NEW_VOTE_NAME)
+            .modifyVote(voteData.adminInfoWithInvalidAdminKey, NEW_VOTE_NAME)
     )
-        .assertMessageIs("IllegalKey");
+        .assertMessageIs(ILLEGAL_KEY);
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void invalid_voteId_is_rejected() {
-    final String invalidvoteId = RandomUtils.createRandomKey();
     assertThrows(
         () -> voteService
             .modifyVote(
-                new VoteAdminInfo(invalidvoteId, existingVote.getAdminKey()), NEW_VOTE_NAME
+                voteData.adminInfoWithInvalidVoteId, NEW_VOTE_NAME
             )
     )
-        .assertMessageIs("illegal voteId");
+        .assertMessageIs(VoteService.ILLEGAL_VOTE_ID);
   }
 
   @TestedBehaviour(VALIDATES_INPUTS)
   @Test
   public void valid_vote_should_be_renamed() {
     voteService.modifyVote(
-        new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()),
+        voteData.adminInfoWithNoNeededAssurances,
         NEW_VOTE_NAME
     );
-    assertEquals(NEW_VOTE_NAME, existingVote.getName());
+    assertEquals(NEW_VOTE_NAME, voteData.voteWithNoNeededAssurances.getName());
   }
 
   @TestedBehaviour(THE_VOTE_CANNOT_BE_MODIFIED_IF_THERE_ARE_BALLOTS_ISSUED)
   @Test
   public void modifyVote_with_ballot_get_an_exception() {
-    existingVote.getBallots().add("TestBallots");
-
     assertThrows(
         () -> voteService.modifyVote(
-            new VoteAdminInfo(existingVote.getId(), existingVote.getAdminKey()), NEW_VOTE_NAME
+            voteData.adminInfoUnmodifiable, NEW_VOTE_NAME
         )
     )
         .assertMessageIs("This vote cannot be modified it has issued ballots.");

@@ -5,15 +5,18 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 
 public interface ContainingBeats extends Matrix<String, Pair> {
 
+  public static final String INVALID_DIRECTION = "Invalid direction";
+  public static final String INVALID_PAIR_KEY = "Invalid Pair key";
+
   default void checkPair(final Pair pair) {
     if (pair == null)
-      throw new ReportedException("Invalid Pair key");
+      throw new ReportedException(INVALID_PAIR_KEY);
   }
 
   default int beatInformation(final String choice1, final String choice2,
       final Direction direction) {
     if (direction == null)
-      throw new ReportedException("Invalid direction");
+      throw new ReportedException(INVALID_DIRECTION);
 
     final Pair pair = getElement(choice1, choice2);
 

@@ -1,9 +1,6 @@
 package org.rulez.demokracia.pdengine.vote;
 
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-import java.util.Set;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,20 +8,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
-import org.rulez.demokracia.pdengine.exception.ReportedException;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 
 @TestedFeature("Manage votes")
 @TestedOperation("delete vote")
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class VoteDeleteValidationTest extends ThrowableTester {
-
-  private static final String INVALID_VOTE_ID = "InvalidVoteId";
+public class VoteDeleteValidationTest extends ThrowableTester
+    implements VoteRepositoryContract, AdminKeyCheckerServiceContract {
 
   @InjectMocks
   private VoteServiceImpl voteService;
@@ -34,24 +29,22 @@ public class VoteDeleteValidationTest extends ThrowableTester {
 
   @Mock
   private AdminKeyCheckerService adminKeyCheckerService;
-  private Vote existingVote;
 
-  private String validVoteId;
+  private VoteData voteData;
 
   @Before
   public void setUp() {
-    existingVote = new Vote("name", Set.of(), Set.of(), false, 1);
-    validVoteId = existingVote.getId();
-    when(voteRepository.findById(INVALID_VOTE_ID)).thenReturn(Optional.empty());
-    when(voteRepository.findById(validVoteId))
-        .thenReturn(Optional.of(existingVote));
+    voteData = new VoteData();
+    contract(voteRepository, voteData);
+    contract(adminKeyCheckerService, voteData);
   }
 
   @TestedBehaviour("validate inputs")
   @Test
   public void invalid_voteId_is_rejected() {
     assertThrows(
-        () -> voteService.deleteVote(new VoteAdminInfo(INVALID_VOTE_ID, "ADMIN"))
+        () -> voteService
+            .deleteVote(new VoteAdminInfo(VoteData.invalidvoteId, "ADMIN"))
     )
         .assertMessageIs("illegal voteId");
   }
@@ -59,27 +52,19 @@ public class VoteDeleteValidationTest extends ThrowableTester {
   @TestedBehaviour("validate inputs")
   @Test
   public void invalid_adminKey_is_rejected() {
-    final String invalidAdminKey = RandomUtils.createRandomKey();
-    doThrow(new ReportedException("IllegalKey")).when(adminKeyCheckerService)
-        .checkAdminKey(existingVote, invalidAdminKey);
-
     assertThrows(
-        () -> voteService
-            .deleteVote(new VoteAdminInfo(validVoteId, invalidAdminKey))
-    )
-        .assertMessageIs("IllegalKey");
+        () -> voteService.deleteVote(voteData.adminInfoWithInvalidAdminKey)
+    ).assertMessageIs(ILLEGAL_KEY);
   }
 
   @TestedBehaviour(
     "deletes the vote with all parameters, choices, ballots and votes cast"
   )
   @Test
-  public void proper_voteId_and_adminKey_with_ballot_does_not_delete_vote() {
-    existingVote.getBallots().add("TestBallot");
+  public void
+      unmodifiable_vote_cannot_be_deleted_even_with_proper_voteId_and_adminKey() {
     assertThrows(
-        () -> voteService.deleteVote(
-            new VoteAdminInfo(validVoteId, existingVote.getAdminKey())
-        )
+        () -> voteService.deleteVote(voteData.adminInfoUnmodifiable)
     )
         .assertMessageIs("This vote cannot be modified it has issued ballots.");
   }
@@ -90,10 +75,8 @@ public class VoteDeleteValidationTest extends ThrowableTester {
   @Test
   public void proper_voteId_and_adminKey_does_delete_vote() {
 
-    final VoteAdminInfo adminInfo =
-        new VoteAdminInfo(validVoteId, existingVote.getAdminKey());
-
-    voteService.deleteVote(adminInfo);
-    verify(voteRepository).delete(existingVote);
+    voteService
+        .deleteVote(voteData.adminInfoForVoteWithOneNeededAssuranceWeHave);
+    verify(voteRepository).delete(voteData.voteWithOneNeededAssuranceWeHave);
   }
 }

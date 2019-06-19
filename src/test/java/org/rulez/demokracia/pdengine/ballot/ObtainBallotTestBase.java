@@ -5,10 +5,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.rulez.demokracia.pdengine.Context;
 import org.rulez.demokracia.pdengine.authentication.AuthenticatedUserService;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
 import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerService;
 import org.rulez.demokracia.pdengine.vote.AdminKeyCheckerServiceContract;
-import org.rulez.demokracia.pdengine.vote.VoteData;
 
 public class ObtainBallotTestBase extends ThrowableTester
     implements AdminKeyCheckerServiceContract {

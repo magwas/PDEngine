@@ -1,10 +1,11 @@
 package org.rulez.demokracia.pdengine.vote;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
+
 import java.time.Instant;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +42,10 @@ public class VoteServiceCreationTest {
   public void setUp() {
     createVoteRequest = new CreateVoteRequest();
     createVoteRequest.setVoteName(VOTE_NAME);
-    createVoteRequest.setCountedAssurances(Set.of("Ass", "Urance", ASSURANCE_NAME));
-    createVoteRequest.setNeededAssurances(Set.of("Akarmi", "Barmi", ASSURANCE_NAME));
+    createVoteRequest
+        .setCountedAssurances(Set.of("Ass", "Urance", ASSURANCE_NAME));
+    createVoteRequest
+        .setNeededAssurances(Set.of("Akarmi", "Barmi", ASSURANCE_NAME));
   }
 
   @Test
@@ -53,12 +56,14 @@ public class VoteServiceCreationTest {
 
   @Test
   public void create_vote_returns_correct_admin_info() {
-    VoteAdminInfo createVote = callCreateVote();
-    Vote savedVote = voteCaptor.getValue();
+    final VoteAdminInfo createVote = callCreateVote();
+    final Vote savedVote = voteCaptor.getValue();
     assertAdminInfoEquals(createVote, savedVote);
   }
 
-  private void assertAdminInfoEquals(final VoteAdminInfo createVote, final Vote savedVote) {
+  private void assertAdminInfoEquals(
+      final VoteAdminInfo createVote, final Vote savedVote
+  ) {
     assertEquals(createVote.getVoteId(), savedVote.getId());
     assertEquals(createVote.getAdminKey(), savedVote.getAdminKey());
   }
@@ -66,15 +71,19 @@ public class VoteServiceCreationTest {
   @Test
   public void neededAssurances_contains_the_assurances_of_the_input() {
     callCreateVote();
-    assertTrue(voteCaptor.getValue().getNeededAssurances()
-        .containsAll(createVoteRequest.getNeededAssurances()));
+    assertTrue(
+        voteCaptor.getValue().getNeededAssurances()
+            .containsAll(createVoteRequest.getNeededAssurances())
+    );
   }
 
   @Test
   public void countedAssurances_contains_the_assurances_of_the_input() {
     callCreateVote();
-    assertTrue(voteCaptor.getValue().getCountedAssurances()
-        .containsAll(createVoteRequest.getCountedAssurances()));
+    assertTrue(
+        voteCaptor.getValue().getCountedAssurances()
+            .containsAll(createVoteRequest.getCountedAssurances())
+    );
   }
 
   @Test
@@ -85,10 +94,10 @@ public class VoteServiceCreationTest {
 
   @Test
   public void create_creates_a_vote_with_creationTime() {
-    Instant before = Instant.now();
+    final Instant before = Instant.now();
     callCreateVote();
-    Instant after = Instant.now();
-    long creationTime = voteCaptor.getValue().getCreationTime();
+    final Instant after = Instant.now();
+    final long creationTime = voteCaptor.getValue().getCreationTime();
     assertBetweenInstants(creationTime, before, after);
   }
 
@@ -100,13 +109,15 @@ public class VoteServiceCreationTest {
 
   private VoteAdminInfo callCreateVote() {
     voteCaptor = ArgumentCaptor.forClass(Vote.class);
-    VoteAdminInfo voteAdminInfo = voteService.createVote(createVoteRequest);
+    final VoteAdminInfo adminInfo = voteService.createVote(createVoteRequest);
     verify(voteRepository).save(voteCaptor.capture());
-    return voteAdminInfo;
+    return adminInfo;
   }
 
-  private void assertBetweenInstants(final long creationTime, final Instant before,
-      final Instant after) {
+  private void assertBetweenInstants(
+      final long creationTime, final Instant before,
+      final Instant after
+  ) {
     assertTrue(creationTime >= before.getEpochSecond());
     assertTrue(creationTime <= after.getEpochSecond());
   }

@@ -1,7 +1,9 @@
 package org.rulez.demokracia.pdengine.beattable;
 
 import javax.persistence.Entity;
+
 import org.rulez.demokracia.pdengine.persistence.BaseEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +27,10 @@ public class Pair extends BaseEntity implements Comparable<Pair> {
   public int compareTo(final Pair other) {
     final int winningDiff = winning - other.winning;
     return winningDiff == 0 ? other.losing - losing : winningDiff;
+  }
+
+  @Override
+  public String toString() {
+    return "(" + winning + "," + losing + ")";
   }
 }

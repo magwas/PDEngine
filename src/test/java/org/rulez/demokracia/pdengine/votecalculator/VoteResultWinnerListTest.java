@@ -26,8 +26,6 @@ public class VoteResultWinnerListTest extends VoteResultTestBase {
 
   @Test
   public void vote_result_contains_winners_list() {
-    final List<List<String>> expectedWinners =
-        List.of(List.of("A", "B"), List.of("C"), List.of("D"));
     assertAllVoteResultContainsWinners(expectedWinners, result);
   }
 

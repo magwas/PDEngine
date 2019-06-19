@@ -1,7 +1,7 @@
 package org.rulez.demokracia.pdengine.beattable;
 
 import static org.junit.Assert.assertEquals;
-import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
-import org.rulez.demokracia.pdengine.choice.RankedChoice;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
 import org.rulez.demokracia.pdengine.testhelpers.ThrowableTester;
-import org.rulez.demokracia.pdengine.votecast.CastVote;
 
 @TestedFeature("Schulze method")
 @TestedOperation("compute initial beat matrix")
@@ -20,25 +19,18 @@ import org.rulez.demokracia.pdengine.votecast.CastVote;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class BeatTableInitializeTest extends ThrowableTester {
 
-  private static final String FIRST = "A";
-  private static final String SECOND = "B";
-  private static final String THIRD = "C";
-  private static final String FOURTH = "D";
-
   @InjectMocks
   private BeatTableServiceImpl beatTableService;
+
+  private VoteData voteData;
   private BeatTable beatTable;
 
   @Before
   public void setUp() {
+    voteData = new VoteData();
 
-    List<RankedChoice> preferences = List.of(new RankedChoice(FIRST, 2),
-        new RankedChoice(SECOND, 3), new RankedChoice(THIRD, 1), new RankedChoice(FOURTH, 1));
-
-    List<CastVote> castVotes = List.of(new CastVote("user1", preferences),
-        new CastVote("user2", preferences), new CastVote("user3", List.of()));
-
-    beatTable = beatTableService.initializeBeatTable(castVotes);
+    beatTable = beatTableService
+        .initializeBeatTable(voteData.castVoteData.castVoteList);
   }
 
   @Test
@@ -48,27 +40,40 @@ public class BeatTableInitializeTest extends ThrowableTester {
   }
 
   @Test
-  public void initialize_does_not_modify_the_values_when_there_are_two_same_rank() {
-    assertEquals(new Pair(0, 0), beatTable.getElement(THIRD, FOURTH));
+  public void
+      initialize_does_not_modify_the_values_when_there_is_no_vote() {
+    assertEquals(
+        new Pair(0, 0), beatTable.getElement(VoteData.CHOICE4, VoteData.CHOICE5)
+    );
   }
 
   @Test
-  public void initialize_sets_the_new_winning_value_FORWARD_when_the_matrix_is_empty() {
-    assertEquals(new Pair(2, 0), beatTable.getElement(FIRST, SECOND));
+  public void
+      initialize_sets_the_right_value_FORWARD() {
+    assertEquals(
+        voteData.beatTableData.beatTableComplex
+            .getElement(VoteData.CHOICE2, VoteData.CHOICE3),
+        beatTable.getElement(VoteData.CHOICE2, VoteData.CHOICE3)
+    );
   }
 
   @Test
-  public void initialize_sets_the_new_losing_value_FORWARD_when_the_matrix_is_empty() {
-    assertEquals(new Pair(0, 2), beatTable.getElement(SECOND, THIRD));
+  public void
+      initialize_sets_the_right_value_BACKWARD() {
+    assertEquals(
+        voteData.beatTableData.beatTableComplex
+            .getElement(VoteData.CHOICE3, VoteData.CHOICE2),
+        beatTable.getElement(VoteData.CHOICE3, VoteData.CHOICE2)
+    );
   }
 
   @Test
-  public void initialize_sets_the_new_winning_value_BACKWARD_when_the_matrix_is_empty1() {
-    assertEquals(new Pair(2, 0), beatTable.getElement(THIRD, SECOND));
-  }
-
-  @Test
-  public void initialize_sets_the_new_losing_value_BACKWARD_when_the_matrix_is_empty() {
-    assertEquals(new Pair(0, 2), beatTable.getElement(SECOND, FIRST));
+  public void initialize_initializes_correctly() {
+    final BeatTable beatTable =
+        beatTableService.initializeBeatTable(voteData.castVoteData.castVoteList);
+    assertEquals(
+        voteData.beatTableData.beatTableComplex,
+        beatTable
+    );
   }
 }

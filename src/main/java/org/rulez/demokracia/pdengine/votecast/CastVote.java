@@ -2,6 +2,7 @@ package org.rulez.demokracia.pdengine.votecast;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.choice.RankedChoice;
 
@@ -22,5 +23,13 @@ public class CastVote extends CastVoteEntity implements CastVoteInterface {
   ) {
     this(proxyId, preferences);
     setAssurances(assurances);
+  }
+
+  @Override
+  public String toString() {
+    String representation = "CastVote(\n\t";
+    for (final RankedChoice i : getPreferences())
+      representation += i.toString() + "\n\t";
+    return representation + ")";
   }
 }

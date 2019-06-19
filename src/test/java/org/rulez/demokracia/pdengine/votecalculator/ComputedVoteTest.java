@@ -3,9 +3,7 @@ package org.rulez.demokracia.pdengine.votecalculator;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper.*;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -14,16 +12,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.rulez.demokracia.pdengine.RandomUtils;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
+import org.rulez.demokracia.pdengine.authentication.AuthServiceContract;
 import org.rulez.demokracia.pdengine.beattable.BeatTable;
 import org.rulez.demokracia.pdengine.beattable.BeatTableService;
 import org.rulez.demokracia.pdengine.beattable.BeatTableTransitiveClosureService;
-import org.rulez.demokracia.pdengine.testhelpers.VariantVote;
+import org.rulez.demokracia.pdengine.dataobjects.CastVoteData;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
+import org.rulez.demokracia.pdengine.tally.Tally;
+import org.rulez.demokracia.pdengine.tally.TallyService;
+import org.rulez.demokracia.pdengine.testhelpers.BeatTableData;
 import org.rulez.demokracia.pdengine.testhelpers.VoteResultTestHelper;
-import org.rulez.demokracia.pdengine.votecast.CastVote;
 
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
@@ -42,32 +43,65 @@ public class ComputedVoteTest {
   @Mock
   private VoteResultComposer voteResultComposer;
 
+  @Mock
+  TallyService tallyService;
+
   private ComputedVote computedVote;
+
+  private BeatTableData beatTableData;
+
+  private CastVoteData castVoteData;
+
+  private VoteData voteData;
 
   @Before
   public void setUp() {
-    when(beatTableService.initializeBeatTable(any()))
-        .thenReturn(createNewBeatTableWithComplexData());
-    final List<String> keys = List.of("A", "B", "C", "D");
-    when(beatTableService.normalize(any()))
-        .thenReturn(createTransitiveClosedBeatTable(keys));
-    when(beatTableTransitiveClosureService.computeTransitiveClosure(any()))
-        .thenReturn(createTransitiveClosedBeatTable(keys));
+    voteData = new VoteData();
+    castVoteData = voteData.castVoteData;
+    beatTableData = voteData.beatTableData;
+    when(beatTableService.initializeBeatTable(castVoteData.castVoteList))
+        .thenReturn(beatTableData.beatTableComplex);
+    when(beatTableService.normalize(beatTableData.beatTableComplex))
+        .thenReturn(beatTableData.beatTableNormalized);
+    when(
+        beatTableTransitiveClosureService
+            .computeTransitiveClosure(beatTableData.beatTableComplex)
+    )
+        .thenReturn(beatTableData.beatTableTransitiveClosed);
     when(voteResultComposer.composeResult(any()))
         .thenReturn(VoteResultTestHelper.createVoteResults());
 
-    final VariantVote vote = new VariantVote();
-    vote.setVotesCast(
-        List.of(new CastVote(RandomUtils.createRandomKey(), List.of()))
-    );
-    computedVote = computedVoteService.computeVote(vote);
+    doReturn(new Tally(AuthServiceContract.ASSURANCE_WE_HAVE))
+        .when(tallyService)
+        .calculateTally(
+            AuthServiceContract.ASSURANCE_WE_HAVE, castVoteData.castVoteList
+        );
+
+    doReturn(new Tally(AuthServiceContract.ASSURANCE_WE_DONT_HAVE))
+        .when(tallyService)
+        .calculateTally(
+            AuthServiceContract.ASSURANCE_WE_DONT_HAVE,
+            castVoteData.castVoteList
+        );
+    when(beatTableService.initializeBeatTable(castVoteData.castVoteList))
+        .thenReturn(beatTableData.beatTableComplex);
+    when(beatTableService.normalize(beatTableData.beatTableComplex))
+        .thenReturn(beatTableData.beatTableNormalized);
+    doReturn(beatTableData.beatTableTransitiveClosed)
+        .when(beatTableTransitiveClosureService)
+        .computeTransitiveClosure(
+            voteData.beatTableData.beatTableNormalized
+        );
+
+    computedVote = computedVoteService
+        .computeVote(voteData.voteWithTwoCountedAssurancesWeDontHaveOne);
   }
 
   @TestedBehaviour("compares and stores initial beat matrix")
   @Test
   public void compute_vote_should_create_initial_matrix_with_full_key_set() {
     assertEquals(
-        Set.of("name1", "name2", "name3"),
+        Set.copyOf(BeatTableData.allChoices),
         Set.copyOf(computedVote.getBeatTable().getKeyCollection())
     );
   }
@@ -76,7 +110,7 @@ public class ComputedVoteTest {
   @Test
   public void after_compute_vote_beat_table_should_contain_beat_information() {
     assertBeatTableEquals(
-        computedVote.getBeatTable(), createNewBeatTableWithComplexData()
+        computedVote.getBeatTable(), beatTableData.beatTableComplex
     );
   }
 
@@ -95,8 +129,9 @@ public class ComputedVoteTest {
   @TestedBehaviour("calculates and stores beatpath matrix")
   @Test
   public void transitive_closure_done_on_beat_path_matrix() {
+
     assertBeatTableEquals(
-        createTransitiveClosedBeatTable(), computedVote.getBeatPathTable()
+        beatTableData.beatTableTransitiveClosed, computedVote.getBeatPathTable()
     );
   }
 

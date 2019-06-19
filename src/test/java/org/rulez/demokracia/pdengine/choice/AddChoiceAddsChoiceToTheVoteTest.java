@@ -31,7 +31,7 @@ public class AddChoiceAddsChoiceToTheVoteTest extends ChoiceTestBase {
   public void created_choice_is_registered_with_the_vote() {
 
     choice = choiceService.addChoice(
-        voteData.voteAdminInfo, "choice1",
+        voteData.adminInfoWithNoNeededAssurances, "choice1",
         "user"
     );
     assertEquals("choice1", choice.getName());
@@ -41,7 +41,7 @@ public class AddChoiceAddsChoiceToTheVoteTest extends ChoiceTestBase {
   @Test
   public void creating_user_is_registered_with_the_choice() {
     choice = choiceService.addChoice(
-        voteData.voteAdminInfo, "choice1",
+        voteData.adminInfoWithNoNeededAssurances, "choice1",
         "user"
     );
     assertEquals("user", choice.getUserName());
@@ -51,7 +51,7 @@ public class AddChoiceAddsChoiceToTheVoteTest extends ChoiceTestBase {
   @Test
   public void if_no_user_then_null_is_Registered() {
     final Choice newChoice = choiceService
-        .addChoice(voteData.voteAdminInfo, "choice", null);
+        .addChoice(voteData.adminInfoWithNoNeededAssurances, "choice", null);
     assertEquals(null, newChoice.getUserName());
   }
 
@@ -59,9 +59,10 @@ public class AddChoiceAddsChoiceToTheVoteTest extends ChoiceTestBase {
   @Test
   public void choice_is_added_to_vote() {
     final Choice newChoice = choiceService
-        .addChoice(voteData.voteAdminInfo, "choice", null);
+        .addChoice(voteData.adminInfoWithNoNeededAssurances, "choice", null);
     assertEquals(
-        newChoice, voteData.voteWithNoAssurances.getChoice(newChoice.getId())
+        newChoice,
+        voteData.voteWithNoNeededAssurances.getChoice(newChoice.getId())
     );
   }
 
@@ -72,7 +73,8 @@ public class AddChoiceAddsChoiceToTheVoteTest extends ChoiceTestBase {
     for (int i = 0; i < 100; i++) {
       final String myChoiceId =
           choiceService.addChoice(
-              voteData.voteAdminInfo, "choice" + i, "hyperuser"
+              voteData.adminInfoWithNoNeededAssurances, "choice" + i,
+              "hyperuser"
           ).getId();
       assertFalse(existingIds.contains(myChoiceId));
       existingIds.add(myChoiceId);

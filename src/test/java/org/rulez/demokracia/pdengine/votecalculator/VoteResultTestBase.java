@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
+import org.rulez.demokracia.pdengine.testhelpers.BeatTableData;
 
 public class VoteResultTestBase {
 
@@ -20,20 +21,31 @@ public class VoteResultTestBase {
   protected WinnerCalculatorService winnerCalculatorService;
 
   protected Set<String> choicesReturned;
-  protected Set<String> keySetOfInitialBeatTable;
   protected List<VoteResult> result;
+  protected BeatTableData beatTableData;
+  final List<List<String>> expectedWinners =
+      List.of(
+          List.of(VoteData.CHOICE1, VoteData.CHOICE5),
+          List.of(VoteData.CHOICE4),
+          List.of(VoteData.CHOICE2),
+          List.of(VoteData.CHOICE3)
+      );
 
   @Before
   public void setUp() {
-    when(winnerCalculatorService.calculateWinners(any(), any()))
-        .thenReturn(List.of("A", "B"))
-        .thenReturn(List.of("C"))
-        .thenReturn(List.of("D"));
+    beatTableData = new BeatTableData();
+    when(
+        winnerCalculatorService.calculateWinners(any(), any())
+    )
+        .thenReturn(List.of(VoteData.CHOICE1, VoteData.CHOICE5))
+        .thenReturn(List.of(VoteData.CHOICE4))
+        .thenReturn(List.of(VoteData.CHOICE2))
+        .thenReturn(List.of(VoteData.CHOICE3));
 
     result = voteResultComposer
-        .composeResult(BeatTableTestHelper.createTransitiveClosedBeatTable());
+        .composeResult(beatTableData.beatTableTransitiveClosed);
+    System.out.println(result);
     choicesReturned = convertResultToChoiceSet(result);
-    keySetOfInitialBeatTable = Set.of("A", "B", "C", "D");
   }
 
   private Set<String> convertResultToChoiceSet(final List<VoteResult> result) {

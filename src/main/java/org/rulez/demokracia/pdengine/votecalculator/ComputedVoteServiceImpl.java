@@ -1,5 +1,6 @@
 package org.rulez.demokracia.pdengine.votecalculator;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.rulez.demokracia.pdengine.beattable.BeatTableTransitiveClosureService
 import org.rulez.demokracia.pdengine.tally.Tally;
 import org.rulez.demokracia.pdengine.tally.TallyService;
 import org.rulez.demokracia.pdengine.vote.Vote;
+import org.rulez.demokracia.pdengine.votecast.CastVote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +38,11 @@ public class ComputedVoteServiceImpl implements ComputedVoteService {
     );
     final BeatTable beatPathTable =
         beatTableService.normalize(result.getBeatTable());
+    final BeatTable closedTable = beatTableTransitiveClosureService
+        .computeTransitiveClosure(beatPathTable);
     result
         .setBeatPathTable(
-            beatTableTransitiveClosureService
-                .computeTransitiveClosure(beatPathTable)
+            closedTable
         );
     result.setVoteResults(
         voteResultComposer.composeResult(result.getBeatPathTable())
@@ -51,8 +54,9 @@ public class ComputedVoteServiceImpl implements ComputedVoteService {
   }
 
   private Map<String, Tally> computeTallying(final Vote vote) {
+    final List<CastVote> votesCast = vote.getVotesCast();
     return vote.getCountedAssurances().stream().map(
-        a -> tallyService.calculateTally(a, vote.getVotesCast())
+        a -> tallyService.calculateTally(a, votesCast)
     ).collect(Collectors.toMap(Tally::getAssurance, t -> t));
   }
 }

@@ -2,10 +2,10 @@ package org.rulez.demokracia.pdengine.votecalculator;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper.*;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,6 +16,8 @@ import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.beattable.BeatTable;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
+import org.rulez.demokracia.pdengine.testhelpers.BeatTableData;
 
 @TestedFeature("Schulze method")
 @TestedOperation("rank candidates")
@@ -28,13 +30,25 @@ public class VoteResultComposerIgnoreTest {
   @Mock
   private WinnerCalculatorService winnerCalculatorService;
   private OngoingStubbing<List<String>> whenCalculateWinnersCalled;
+  private BeatTableData beatTableData;
+
+  @Before
+  public void setUp() {
+    beatTableData = new BeatTableData();
+
+  }
 
   @Test
   public void
       winner_calculation_ends_in_one_step_when_all_choices_ignored_at_once() {
     verifyWinnerCalculatorRunnedNTimes(
-        createNewBeatTableWithComplexData(),
-        List.of(List.of(CHOICE1, CHOICE2, CHOICE3)), 1
+        beatTableData.beatTableComplex,
+        List.of(
+            List.of(
+                VoteData.CHOICE1, VoteData.CHOICE2, VoteData.CHOICE3,
+                VoteData.CHOICE4, VoteData.CHOICE5
+            )
+        ), 1
     );
   }
 
@@ -42,8 +56,8 @@ public class VoteResultComposerIgnoreTest {
   public void
       winner_calculation_ends_in_n_steps_when_choices_ignored_one_by_one() {
     verifyWinnerCalculatorRunnedNTimes(
-        createNewBeatTableWithComplexData(),
-        List.of(List.of(CHOICE1), List.of(CHOICE2), List.of(CHOICE3)), 3
+        beatTableData.beatTableComplex,
+        List.of(List.of(VoteData.CHOICE1), List.of(VoteData.CHOICE2), List.of(VoteData.CHOICE3), List.of(VoteData.CHOICE4), List.of(VoteData.CHOICE5)), 5
     );
   }
 

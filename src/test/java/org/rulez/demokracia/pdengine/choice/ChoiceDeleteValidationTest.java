@@ -1,7 +1,5 @@
 package org.rulez.demokracia.pdengine.choice;
 
-import static org.mockito.Mockito.doThrow;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,8 +7,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
-import org.rulez.demokracia.pdengine.dataobjects.VoteAdminInfo;
-import org.rulez.demokracia.pdengine.exception.ReportedException;
 
 @TestedFeature("Manage votes")
 @TestedOperation("delete choice")
@@ -26,18 +22,10 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
   @TestedBehaviour("validates inputs")
   @Test
   public void invalid_voteId_is_rejected() {
-    doThrow(new ReportedException("illegal voteId", invalidvoteId))
-        .when(voteService)
-        .getVote(invalidvoteId);
     assertThrows(
         () -> choiceService
-            .deleteChoice(
-                new VoteAdminInfo(
-                    invalidvoteId, voteData.voteWithNoAssurances.getAdminKey()
-                ), "choiceId"
-            )
-    )
-        .assertMessageIs("illegal voteId");
+            .deleteChoice(voteData.adminInfoWithInvalidVoteId, "choiceId")
+    ).assertMessageIs(ILLEGAL_VOTE_ID);
   }
 
   @TestedBehaviour("validates inputs")
@@ -47,7 +35,7 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
     assertThrows(
         () -> choiceService
             .deleteChoice(
-                voteData.voteAdminInfo, invalidChoiceId
+                voteData.adminInfoWithNoNeededAssurances, invalidChoiceId
             )
     )
         .assertMessageIs("Illegal choiceId");
@@ -57,17 +45,14 @@ public class ChoiceDeleteValidationTest extends ChoiceTestBase {
   @Test
   public void unmodifiable_vote_is_rejected() {
     final Choice choice = new Choice("ChoiceName", "user");
-    voteData.voteWithNoAssurances.addChoice(choice);
-    final VoteAdminInfo voteAdminInfo =
-        new VoteAdminInfo(
-            voteData.voteWithNoAssurances.getId(), "InvalidAdminKey"
-        );
-    doThrow(new ReportedException("unmodifiable"))
-        .when(voteService)
-        .getModifiableVote(voteAdminInfo);
+    voteData.voteWithNoNeededAssurances.addChoice(choice);
 
     assertThrows(
-        () -> choiceService.deleteChoice(voteAdminInfo, choice.getId())
-    ).assertMessageIs("unmodifiable");
+        () -> choiceService
+            .deleteChoice(
+                voteData.adminInfoUnmodifiable,
+                choice.getId()
+            )
+    ).assertMessageIs(UNMODIFIABLE);
   }
 }

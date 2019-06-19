@@ -1,11 +1,13 @@
 package org.rulez.demokracia.pdengine.votecalculator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.rulez.demokracia.pdengine.beattable.BeatTable;
 import org.rulez.demokracia.pdengine.beattable.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +22,22 @@ public class VoteResultComposerImpl implements VoteResultComposer {
   private final Set<String> ignoredSet;
 
   public VoteResultComposerImpl() {
-    winnerCalculator = new WinnerCalculatorServiceImpl();
     ignoredSet = new HashSet<>();
   }
 
   @Override
   public List<VoteResult> composeResult(final BeatTable beatTable) {
     final List<VoteResult> result = new ArrayList<>();
-    final HashSet<String> keyCollection =
-        new HashSet<>(beatTable.getKeyCollection());
-    while (!ignoredSet.equals(keyCollection)) {
+    final int candidateCount = beatTable.getKeyCollection().size();
+    int numIgnoreds = -1;
+    while (
+      ignoredSet.size() < candidateCount && ignoredSet.size() > numIgnoreds
+    ) {
+      numIgnoreds = ignoredSet.size();
       final List<String> winners =
           winnerCalculator.calculateWinners(beatTable, ignoredSet);
-
-      result.add(createVoteResult(beatTable, winners));
+      final VoteResult voteResult = createVoteResult(beatTable, winners);
+      result.add(voteResult);
       ignoredSet.addAll(winners);
     }
     return result;
@@ -56,7 +60,9 @@ public class VoteResultComposerImpl implements VoteResultComposer {
       getBeatsForChoice(final String choice, final BeatTable beatTable) {
     final Pair zeroPair = new Pair(0, 0);
     final VoteResultBeat result = new VoteResultBeat();
-    for (final String row : beatTable.getKeyCollection()) {
+    final Collection<String> keyCollection =
+        new ArrayList<>(beatTable.getKeyCollection());
+    for (final String row : keyCollection) {
       final Pair beat = beatTable.getElement(row, choice);
       if (!zeroPair.equals(beat))
         result.getBeats().put(row, beat);

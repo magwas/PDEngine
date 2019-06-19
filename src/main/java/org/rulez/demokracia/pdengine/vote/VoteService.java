@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public interface VoteService {
 
+  String ILLEGAL_VOTE_ID = "illegal voteId";
+
   VoteAdminInfo createVote(final CreateVoteRequest createVoteRequest);
 
   Vote getVote(String voteId);
 
-  void modifyVote(VoteAdminInfo voteAdminInfo, String voteName);
+  void modifyVote(VoteAdminInfo adminInfo, String voteName);
 
   void deleteVote(VoteAdminInfo adminInfo);
 

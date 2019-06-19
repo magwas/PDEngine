@@ -7,19 +7,26 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapMatrix<KeyType extends Serializable, ValueType extends Serializable>
+import lombok.ToString;
+
+@ToString
+public class MapMatrix<KeyType extends Serializable,
+    ValueType extends Serializable>
     implements Matrix<KeyType, ValueType> {
 
   private static final long serialVersionUID = 1L;
+  public static final String INVALID_COLUMN_KEY = "Invalid column key";
+  public static final String INVALID_ROW_KEY = "Invalid row key";
+
   private final Map<KeyType, ConcurrentHashMap<KeyType, ValueType>> value =
       new ConcurrentHashMap<>();
   private final Collection<KeyType> keyCollection;
 
   public MapMatrix(final Collection<KeyType> keyCollection) {
-    for (KeyType key : keyCollection) {
+    for (final KeyType key : keyCollection)
       value.put(key, (ConcurrentHashMap<KeyType, ValueType>) newRow());
-    }
-    this.keyCollection = Collections.unmodifiableSet(new HashSet<KeyType>(keyCollection));
+    this.keyCollection =
+        Collections.unmodifiableSet(new HashSet<>(keyCollection));
   }
 
   private Map<KeyType, ValueType> newRow() {
@@ -27,16 +34,20 @@ public class MapMatrix<KeyType extends Serializable, ValueType extends Serializa
   }
 
   @Override
-  public void setElement(final KeyType columnKey, final KeyType rowKey, final ValueType value) {
+  public void setElement(
+      final KeyType columnKey, final KeyType rowKey, final ValueType value
+  ) {
     checkKeys(columnKey, rowKey);
-    ConcurrentHashMap<KeyType, ValueType> column = this.value.get(columnKey);
+    final ConcurrentHashMap<KeyType, ValueType> column =
+        this.value.get(columnKey);
     column.put(rowKey, value);
   }
 
   @Override
   public ValueType getElement(final KeyType columnKey, final KeyType rowKey) {
     checkKeys(columnKey, rowKey);
-    ConcurrentHashMap<KeyType, ValueType> column = this.value.get(columnKey);
+    final ConcurrentHashMap<KeyType, ValueType> column =
+        this.value.get(columnKey);
     return column.get(rowKey);
   }
 
@@ -51,9 +62,8 @@ public class MapMatrix<KeyType extends Serializable, ValueType extends Serializa
   }
 
   private void checkKey(final KeyType key, final String dimensionName) {
-    if (!keyCollection.contains(key)) {
+    if (!keyCollection.contains(key))
       throw new IllegalArgumentException("Invalid " + dimensionName + " key");
-    }
   }
 
 }

@@ -2,6 +2,9 @@ package org.rulez.demokracia.pdengine.votecalculator;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,16 +27,23 @@ public class ComputedVoteTallyingTest extends ComputedVoteTestBase {
 
   @Test
   public void vote_result_contains_tally_for_each_counted_assurances() {
+    final Set<String> keySet = computedVote.getTallying().keySet();
+    final List<String> countedAssurances =
+        voteData.voteWithTwoCountedAssurancesWeDontHaveOne
+            .getCountedAssurances();
     assertTrue(
-        computedVote.getTallying().keySet()
-            .containsAll(vote.getCountedAssurances())
+        keySet
+            .containsAll(
+                countedAssurances
+            )
     );
   }
 
   @Test
   public void vote_result_contains_tally_only_for_counted_assurances() {
     assertTrue(
-        vote.getCountedAssurances()
+        voteData.voteWithTwoCountedAssurancesWeDontHaveOne
+            .getCountedAssurances()
             .containsAll(computedVote.getTallying().keySet())
     );
   }

@@ -31,14 +31,14 @@ public class VoteServiceImpl implements VoteService {
   @Override
   public Vote getVote(final String voteId) {
     return voteRepository.findById(voteId)
-        .orElseThrow(() -> new ReportedException("illegal voteId", voteId));
+        .orElseThrow(() -> new ReportedException(ILLEGAL_VOTE_ID, voteId));
   }
 
   @Override
   public void
-      modifyVote(final VoteAdminInfo voteAdminInfo, final String voteName) {
+      modifyVote(final VoteAdminInfo adminInfo, final String voteName) {
     ValidationUtil.checkVoteName(voteName);
-    final Vote vote = getModifiableVote(voteAdminInfo);
+    final Vote vote = getModifiableVote(adminInfo);
 
     vote.setName(voteName);
     saveVote(vote);
@@ -47,7 +47,6 @@ public class VoteServiceImpl implements VoteService {
   @Override
   public void deleteVote(final VoteAdminInfo adminInfo) {
     final Vote vote = getModifiableVote(adminInfo);
-
     voteRepository.delete(vote);
   }
 

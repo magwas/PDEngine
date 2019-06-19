@@ -3,6 +3,7 @@ package org.rulez.demokracia.pdengine.votecalculator;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.rulez.demokracia.pdengine.beattable.BeatTable;
 import org.rulez.demokracia.pdengine.beattable.BeatTableIgnoreService;
 import org.rulez.demokracia.pdengine.beattable.Pair;
@@ -14,21 +15,26 @@ public class WinnerCalculatorServiceImpl implements WinnerCalculatorService {
 
   @Autowired
   private BeatTableIgnoreService beatTableIgnore;
-
+  private final static Pair nonbeatingPair = new Pair(0, 0);
 
   @Override
-  public List<String> calculateWinners(final BeatTable beatTable,
-      final Collection<String> ignoredChoices) {
-    BeatTable ignoredBeatTable = beatTableIgnore.ignoreChoices(beatTable, ignoredChoices);
-    return ignoredBeatTable.getKeyCollection().stream()
+  public List<String> calculateWinners(
+      final BeatTable beatTable,
+      final Collection<String> ignoredChoices
+  ) {
+    final BeatTable ignoredBeatTable =
+        beatTableIgnore.ignoreChoices(beatTable, ignoredChoices);
+    final List<String> result = ignoredBeatTable.getKeyCollection().stream()
         .filter(choice -> isWinner(choice, ignoredBeatTable)).collect(Collectors.toList());
+    return result;
   }
 
   private boolean isWinner(final String choice, final BeatTable beatTable) {
-    Pair nonbeatingPair = new Pair(0, 0);
-
     return beatTable.getKeyCollection().stream()
-        .allMatch(otherChoice -> nonbeatingPair.equals(beatTable.getElement(otherChoice, choice)));
+        .allMatch(
+            otherChoice -> nonbeatingPair
+                .equals(beatTable.getElement(choice, otherChoice))
+        );
   }
 
 }

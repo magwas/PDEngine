@@ -16,8 +16,6 @@ import org.rulez.demokracia.pdengine.exception.ReportedException;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ObtainBallotTest extends ObtainBallotTestBase {
 
-  private static final String ANON_USER = "user";
-
   @Override
   @Before
   public void setUp() {
@@ -28,8 +26,8 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @Test
   public void obtain_ballot_returns_the_ballot_string() {
     final String ballot = ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave,
-        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+        voteData.voteWithOneNeededAssuranceWeHave,
+        voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
     );
     assertTrue(ballot instanceof String);
   }
@@ -38,12 +36,12 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @Test
   public void two_ballots_are_different() {
     final String ballot1 = ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave,
-        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+        voteData.voteWithOneNeededAssuranceWeHave,
+        voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
     );
     final String ballot2 = ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave,
-        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+        voteData.voteWithOneNeededAssuranceWeHave,
+        voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
     );
     assertNotEquals(ballot1, ballot2);
   }
@@ -55,8 +53,8 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
     assertThrows(
         () -> ballotService
             .obtainBallot(
-                voteData.voteWithOneAssuranceWeHave,
-                invalidAdminKey
+                voteData.voteWithNoNeededAssurances,
+                BAD_ADMINKEY
             )
     )
         .assertException(ReportedException.class)
@@ -68,11 +66,11 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @Test
   public void obtainBallot_stores_the_ballot() {
     final String ballot = ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave,
-        voteData.voteWithOneAssuranceWeHave.getAdminKey()
+        voteData.voteWithOneNeededAssuranceWeHave,
+        voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
     );
     assertTrue(
-        voteData.voteWithOneAssuranceWeHave.getBallots()
+        voteData.voteWithOneNeededAssuranceWeHave.getBallots()
             .contains(ballot)
     );
   }
@@ -83,16 +81,16 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_admin() {
     final String adminKey =
-        voteData.voteWithOneAssuranceWeHave.getAdminKey();
+        voteData.voteWithOneNeededAssuranceWeHave.getAdminKey();
     final int originalObtainedBallots =
-        voteData.voteWithOneAssuranceWeHave
+        voteData.voteWithOneNeededAssuranceWeHave
             .getRecordedBallotsCount(adminKey);
     ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave, adminKey
+        voteData.voteWithOneNeededAssuranceWeHave, adminKey
     );
     assertEquals(
         originalObtainedBallots + 1,
-        voteData.voteWithOneAssuranceWeHave
+        voteData.voteWithOneNeededAssuranceWeHave
             .getRecordedBallotsCount("admin").intValue()
     );
   }
@@ -103,15 +101,15 @@ public class ObtainBallotTest extends ObtainBallotTestBase {
   @Test
   public void obtainBallot_increases_recordedBallots_when_adminKey_is_anon() {
     final int originalObtainedBallots =
-        voteData.voteWithOneAssuranceWeHave
-            .getRecordedBallotsCount(ANON_USER);
+        voteData.voteWithOneNeededAssuranceWeHave
+            .getRecordedBallotsCount(AUTHENTICATED_USER_NAME);
     ballotService.obtainBallot(
-        voteData.voteWithOneAssuranceWeHave, ANON_USER
+        voteData.voteWithOneNeededAssuranceWeHave, USER
     );
     assertEquals(
         originalObtainedBallots + 1,
-        voteData.voteWithOneAssuranceWeHave
-            .getRecordedBallotsCount(ANON_USER).intValue()
+        voteData.voteWithOneNeededAssuranceWeHave
+            .getRecordedBallotsCount(AUTHENTICATED_USER_NAME).intValue()
     );
   }
 }

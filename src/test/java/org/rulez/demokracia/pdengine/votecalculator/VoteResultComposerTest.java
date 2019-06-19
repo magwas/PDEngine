@@ -1,9 +1,8 @@
 package org.rulez.demokracia.pdengine.votecalculator;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.rulez.demokracia.pdengine.annotations.TestedBehaviour;
 import org.rulez.demokracia.pdengine.annotations.TestedFeature;
 import org.rulez.demokracia.pdengine.annotations.TestedOperation;
-import org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper;
+import org.rulez.demokracia.pdengine.testhelpers.BeatTableData;
 
 @TestedFeature("Vote")
 @TestedOperation("Compute vote results")
@@ -26,22 +25,16 @@ public class VoteResultComposerTest extends VoteResultTestBase {
   @Before
   @Override
   public void setUp() {
-    when(winnerCalculatorService.calculateWinners(any(), any()))
-        .thenReturn(List.of("A", "B"))
-        .thenReturn(List.of("C")).thenReturn(List.of("D"));
-
-    result =
-        voteResultComposer.composeResult(
-            BeatTableTestHelper.createTransitiveClosedBeatTable()
-        );
+    super.setUp();
     choicesReturned = convertResultToChoiceSet(result);
-    keySetOfInitialBeatTable = Set.of("A", "B", "C", "D");
 
   }
 
   @Test
   public void compute_vote_results_returns_every_choice() {
-    assertEquals(keySetOfInitialBeatTable, choicesReturned);
+    assertEquals(
+        new HashSet<>(BeatTableData.allChoices), new HashSet<>(choicesReturned)
+    );
   }
 
   @Test
@@ -49,12 +42,15 @@ public class VoteResultComposerTest extends VoteResultTestBase {
     final List<String> keyList = result.stream().map(VoteResult::getWinners)
         .flatMap(List::stream)
         .collect(Collectors.toList());
+    System.out.println(keyList);
     assertEquals(keyList.size(), choicesReturned.size());
   }
 
   @Test
   public void compute_vote_results_assigns_no_beat_to_winners() {
-    final int winnersLoses = getNumberOfBeats(result.get(0));
+    final int winnersLoses =
+        result.get(0).getBeats().values().stream().map(m -> m.getBeats().size())
+            .reduce((a, b) -> a + b).get();
     assertEquals(0, winnersLoses);
   }
 
@@ -69,11 +65,6 @@ public class VoteResultComposerTest extends VoteResultTestBase {
         voteResult.getBeats().values().stream()
             .allMatch(m -> !m.getBeats().isEmpty())
     );
-  }
-
-  private Integer getNumberOfBeats(final VoteResult voteResult) {
-    return voteResult.getBeats().values().stream().map(m -> m.getBeats().size())
-        .reduce((a, b) -> a + b).get();
   }
 
   private Set<String> convertResultToChoiceSet(final List<VoteResult> result) {

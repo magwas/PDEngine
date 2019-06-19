@@ -31,7 +31,7 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
     assertThrows(
         () -> ballotService
             .obtainBallot(
-                voteData.voteWithAssuranceWeDontHave,
+                voteData.voteWithNeededAssuranceWeDontHave,
                 AUTHENTICATED_USER_NAME
             )
     )
@@ -47,7 +47,7 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
     final String ballot =
         ballotService
             .obtainBallot(
-                voteData.voteWithTwoAssurancesWeHave,
+                voteData.voteWithTwoNeededAssurancesWeHave,
                 AUTHENTICATED_USER_NAME
             );
     assertTrue(ballot instanceof String);
@@ -60,7 +60,7 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
   public void if_neededAssurances_is_empty_then_a_ballot_is_served_to_anyone() {
     final String ballot =
         ballotService.obtainBallot(
-            voteData.voteWithNoAssurances,
+            voteData.voteWithNoNeededAssurances,
             AUTHENTICATED_USER_NAME
         );
     assertTrue(ballot instanceof String);
@@ -73,13 +73,13 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
 
     ballotService
         .obtainBallot(
-            voteData.voteWithOneAssuranceWeHave,
+            voteData.voteWithOneNeededAssuranceWeHave,
             AUTHENTICATED_USER_NAME
         );
     assertThrows(
         () -> ballotService
             .obtainBallot(
-                voteData.voteWithOneAssuranceWeHave,
+                voteData.voteWithOneNeededAssuranceWeHave,
                 AUTHENTICATED_USER_NAME
             )
     )
@@ -92,13 +92,13 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
 
     final String ballotAdmin1 =
         ballotService.obtainBallot(
-            voteData.voteWithOneAssuranceWeHave,
-            voteData.voteWithOneAssuranceWeHave.getAdminKey()
+            voteData.voteWithOneNeededAssuranceWeHave,
+            voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
         );
     final String ballotAdmin2 =
         ballotService.obtainBallot(
-            voteData.voteWithOneAssuranceWeHave,
-            voteData.voteWithOneAssuranceWeHave.getAdminKey()
+            voteData.voteWithOneNeededAssuranceWeHave,
+            voteData.voteWithOneNeededAssuranceWeHave.getAdminKey()
         );
     assertNotEquals(ballotAdmin1, ballotAdmin2);
   }
@@ -113,7 +113,7 @@ public class ObtainBallotAdminKeyTest extends ObtainBallotTestBase {
     assertThrows(
         () -> ballotService
             .obtainBallot(
-                voteData.voteWithOneAssuranceWeHave,
+                voteData.voteWithOneNeededAssuranceWeHave,
                 AUTHENTICATED_USER_NAME
             )
     )

@@ -1,11 +1,12 @@
 package org.rulez.demokracia.pdengine.votecalculator;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,8 @@ import org.rulez.demokracia.pdengine.annotations.TestedOperation;
 import org.rulez.demokracia.pdengine.beattable.BeatTable;
 import org.rulez.demokracia.pdengine.beattable.BeatTableIgnoreService;
 import org.rulez.demokracia.pdengine.beattable.Pair;
-import org.rulez.demokracia.pdengine.testhelpers.BeatTableTestHelper;
+import org.rulez.demokracia.pdengine.dataobjects.VoteData;
+import org.rulez.demokracia.pdengine.testhelpers.BeatTableData;
 
 @TestedFeature("Vote")
 @TestedOperation("calculate winners")
@@ -31,58 +33,98 @@ public class CalculateWinnersTest {
   @Mock
   private BeatTableIgnoreService beatTableIgnore;
 
-  private BeatTable beatPathTable;
+  private BeatTableData beatTableData;
 
   @Before
   public void setUp() {
-    beatPathTable = BeatTableTestHelper.createTransitiveClosedBeatTable();
-    when(beatTableIgnore.ignoreChoices(beatPathTable, List.of("A")))
-        .thenReturn(BeatTableTestHelper.createTransitiveClosedBeatTable(List.of("B", "C", "D")));
-    when(beatTableIgnore.ignoreChoices(beatPathTable, Set.of())).thenReturn(beatPathTable);
+    beatTableData = new BeatTableData();
+
+    when(
+        beatTableIgnore
+            .ignoreChoices(
+                beatTableData.beatTableTransitiveClosed,
+                List.of(VoteData.CHOICE1)
+            )
+    )
+        .thenReturn(
+            beatTableData.beatTableFiltered
+        );
+    when(
+        beatTableIgnore
+            .ignoreChoices(beatTableData.beatTableTransitiveClosed, Set.of())
+    )
+        .thenReturn(beatTableData.beatTableTransitiveClosed);
   }
 
   @TestedBehaviour("only choices not in ignoredChoices are considered")
   @Test
   public void calculate_winners_returns_none_of_the_ignored_choices() {
-    Collection<String> ignoredChoices = List.of("A");
-    List<String> winners = winnerCalculator.calculateWinners(beatPathTable, ignoredChoices);
-    assertFalse(winners.contains("A"));
+    final Collection<String> ignoredChoices = List.of(VoteData.CHOICE1);
+    final List<String> winners =
+        winnerCalculator.calculateWinners(
+            beatTableData.beatTableTransitiveClosed, ignoredChoices
+        );
+    assertFalse(winners.contains(VoteData.CHOICE1));
 
   }
 
   @TestedBehaviour("only choices not in ignoredChoices are considered")
   @Test
   public void calculate_winners_returns_not_ignored_winner() {
-    List<String> winners = winnerCalculator.calculateWinners(beatPathTable, List.of("A"));
-    assertTrue(winners.contains("B"));
+    System.out.println(beatTableData.beatTableTransitiveClosed);
+    final List<String> winners =
+        winnerCalculator.calculateWinners(
+            beatTableData.beatTableTransitiveClosed,
+            List.of(VoteData.CHOICE1)
+        );
+    assertFalse(winners.contains(VoteData.CHOICE1));
   }
 
   @TestedBehaviour("all non-beaten candidates are winners")
   @Test
   public void calculate_winners_doesnt_return_beaten_candidates() {
-    assertNoWinnerIsBeaten(winnerCalculator.calculateWinners(beatPathTable, Set.of()));
+    assertNoWinnerIsBeaten(
+        winnerCalculator
+            .calculateWinners(beatTableData.beatTableTransitiveClosed, Set.of())
+    );
   }
 
   @TestedBehaviour("all non-beaten candidates are winners")
   @Test
   public void calculate_winners_return_all_non_beaten_candidates() {
-    assertNonbeatensAreWinner(winnerCalculator.calculateWinners(beatPathTable, Set.of()));
+    final List<String> winners = winnerCalculator
+        .calculateWinners(beatTableData.beatTableTransitiveClosed, Set.of());
+    System.out.println(winners);
+    assertNonbeatensAreWinner(
+        winners
+    );
   }
 
   private void assertNoWinnerIsBeaten(final List<String> winners) {
-    assertTrue(winners.stream().allMatch(choice -> isAWinner(choice, beatPathTable)));
+    assertTrue(
+        winners.stream().allMatch(
+            choice -> isAWinner(choice, beatTableData.beatTableTransitiveClosed)
+        )
+    );
   }
 
   private void assertNonbeatensAreWinner(final List<String> winners) {
     assertTrue(
-        beatPathTable.getKeyCollection().stream().filter(choice -> isAWinner(choice, beatPathTable))
-            .allMatch(choice -> winners.contains(choice)));
+        beatTableData.beatTableTransitiveClosed.getKeyCollection().stream()
+            .filter(
+                choice -> isAWinner(
+                    choice, beatTableData.beatTableTransitiveClosed
+                )
+            )
+            .allMatch(choice -> winners.contains(choice))
+    );
   }
 
-  private boolean isAWinner(final String player1, final BeatTable beatPathTable) {
-    for (String player2 : beatPathTable.getKeyCollection()) {
-      Pair forward = beatPathTable.getElement(player1, player2);
-      Pair backward = beatPathTable.getElement(player2, player1);
+  private boolean
+      isAWinner(final String player1, final BeatTable beatPathTable) {
+    for (final String player2 : beatPathTable.getKeyCollection()) {
+      final Pair forward = beatPathTable.getElement(player2, player1);
+      final Pair backward = beatPathTable.getElement(player1, player2);
       if (!forward.equals(beatPathTable.compareBeats(forward, backward)))
         return false;
     }
