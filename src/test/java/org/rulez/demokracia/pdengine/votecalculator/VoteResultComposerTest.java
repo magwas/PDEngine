@@ -42,7 +42,6 @@ public class VoteResultComposerTest extends VoteResultTestBase {
     final List<String> keyList = result.stream().map(VoteResult::getWinners)
         .flatMap(List::stream)
         .collect(Collectors.toList());
-    System.out.println(keyList);
     assertEquals(keyList.size(), choicesReturned.size());
   }
 

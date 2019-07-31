@@ -5,7 +5,8 @@ RUN apt-get -y upgrade
 
 RUN apt-get -y install software-properties-common apt-transport-https
 RUN apt-add-repository -y ppa:openjdk-r/ppa
-RUN until apt-key adv --keyserver keys.gnupg.net --recv 43DB103F31060848; do echo retrying; done
+
+RUN until apt-key adv --keyserver keyserver.ubuntu.com --recv EF678DA6D5B1436D3972DFD317BE949418BE5D6B; do echo retrying; done
 RUN echo deb http://repos.demokracia.rulez.org/apt/debian/ master main >/etc/apt/sources.list.d/repos.demokracia.rulez.org.list
 
 RUN apt-get update
@@ -35,6 +36,9 @@ RUN wget "http://ftp.halifax.rwth-aachen.de/eclipse//technology/epp/downloads/re
 RUN wget https://projectlombok.org/downloads/lombok.jar -O /tmp/lombok.jar;\
     java -jar /tmp/lombok.jar install /opt/eclipse;\
     rm /tmp/lombok.jar;
+RUN wget https://vorboss.dl.sourceforge.net/project/pydev/pydev/PyDev%207.2.1/PyDev%207.2.1.zip -O /tmp/pydev.zip;\
+    unzip /tmp/pydev.zip -d /opt/eclipse;\
+    rm /tmp/pydev.zip
 RUN /opt/eclipse/eclipse -application org.eclipse.equinox.p2.director -repository https://dl.bintray.com/pmd/pmd-eclipse-plugin/releases/4.2.0.v20190331-1136 -installIUs net.sourceforge.pmd.eclipse.feature.group -noSplash
 RUN /opt/eclipse/eclipse -application org.eclipse.equinox.p2.director -repository https://download.springsource.com/release/TOOLS/update/e4.11/ -installIUs org.springsource.sts.ide.feature.group -noSplash
 ENTRYPOINT ["/build/tools/entrypoint"]

@@ -71,7 +71,6 @@ public class CalculateWinnersTest {
   @TestedBehaviour("only choices not in ignoredChoices are considered")
   @Test
   public void calculate_winners_returns_not_ignored_winner() {
-    System.out.println(beatTableData.beatTableTransitiveClosed);
     final List<String> winners =
         winnerCalculator.calculateWinners(
             beatTableData.beatTableTransitiveClosed,
@@ -94,7 +93,6 @@ public class CalculateWinnersTest {
   public void calculate_winners_return_all_non_beaten_candidates() {
     final List<String> winners = winnerCalculator
         .calculateWinners(beatTableData.beatTableTransitiveClosed, Set.of());
-    System.out.println(winners);
     assertNonbeatensAreWinner(
         winners
     );

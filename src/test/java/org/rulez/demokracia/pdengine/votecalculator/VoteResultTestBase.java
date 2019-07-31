@@ -44,7 +44,6 @@ public class VoteResultTestBase {
 
     result = voteResultComposer
         .composeResult(beatTableData.beatTableTransitiveClosed);
-    System.out.println(result);
     choicesReturned = convertResultToChoiceSet(result);
   }
 
